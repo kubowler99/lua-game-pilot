@@ -4,12 +4,24 @@ local transition  = _G.transition
 local transition2 = _G.transition2
 local timer       = _G.timer
 
- -- Helpers
+------------------------------------------------------------------------------------------------------------------------
+-- Helper Functions --
+------------------------------------------------------------------------------------------------------------------------
+
+---Helper to get X position from a group's entity object
+---@param group table Display group containing entity reference
+---@param anchor number? Anchor point (0-1)
+---@param world table? World coordinate reference
+---@return number x X position
 local function groupGetX(group, anchor, world)
   return group.object:getX(anchor, world)
 end
 
-
+---Helper to get Y position from a group's entity object
+---@param group table Display group containing entity reference
+---@param anchor number? Anchor point (0-1)
+---@param world table? World coordinate reference
+---@return number y Y position
 local function groupGetY(group, anchor, world)
   return group.object:getY(anchor, world)
 end
@@ -17,20 +29,44 @@ end
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Entity --
 -- ---------------------------------------------------------------------------------------------------------------------
+
+---@class Entity
+---@field group table Solar2D display group containing all visuals
+---@field _direction number Horizontal facing direction: 1 = right, -1 = left
+---@field anchorX number Horizontal anchor point (0-1, default 0.5)
+---@field anchorY number Vertical anchor point (0-1, default 0.5)
+---@field width number? Entity width in pixels
+---@field height number? Entity height in pixels
+---@field id string? Unique identifier for this entity
+---@field _inGameElement boolean? True if entity uses game time system
+---@field _paused boolean? Whether entity is currently paused
+---@field _gameTimers table<any, any> Game-time timers attached to this entity
+---@field _solarTimers table<any, any> Real-time timers attached to this entity
+---@field _transitions table<string, boolean> Active transition tags
+---@field __sfx table<string, table> Sound effects mapped by name
 local Entity = Class("entity")
 Entity._direction = 1
 Entity.anchorX    = .5
 Entity.anchorY    = .5
 Entity.__sfx      = {}
 
-
+---Registry of all active entity objects
+---@type table<number, Entity>
 local objects = {}
+
+---Constructor - creates entity and initializes it
+---@param ... any Parameters passed to create()
+---@return void
 function Entity:initialize(...)
   self:create(...)
   self:hardReset()
 end
 
-
+---Creates the entity's display group and internal structures
+---@param parent table? Parent display group to insert into
+---@param x number? Initial X position
+---@param y number? Initial Y position
+---@return void
 function Entity:create(parent, x, y)
   self.group = display.newGroup()
   self.group.object = self
@@ -53,6 +89,10 @@ function Entity:create(parent, x, y)
 end
 
 
+------------------------------------------------------------------------------------------------------------------------
+-- Debug Helpers --
+------------------------------------------------------------------------------------------------------------------------
+
 -- DEBUG helper points
 -- self.point = self:_newCircle{
 --   color = {0,.3,.7, .5},
@@ -60,7 +100,9 @@ end
 --   y     = 17,
 -- }
 
-
+---Creates a draggable debug circle for positioning/debugging (DEBUG only)
+---@param params table Parameters: {x, y, color, onTouch?, onMoved?, onEnded?}
+---@return table circle The created circle display object
 function Entity:_newCircle(params) -- DEBUG
   local circle = display.newCircle(self.group, params.x, params.y, 5)
   circle:setFillColor(unpack(params.color))
@@ -83,14 +125,21 @@ function Entity:_newCircle(params) -- DEBUG
   return circle
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Position & Transform --
+------------------------------------------------------------------------------------------------------------------------
 
--- Basics --------------------------------------------------------------------------------------------------------------
-
+---Gets the parent display group
+---@return table? parent Parent display group or nil
 function Entity:getParent()
   return self.group.parent
 end
 
-
+---Sets the entity position, either immediately or with transition
+---@param x number? X position (nil to keep current)
+---@param y number? Y position (nil to keep current)
+---@param params? table If provided, animates position change with these transition params
+---@return void
 function Entity:setPosition(x, y, params)
   if params then
     params.tag = params.tag or self.id
@@ -105,7 +154,11 @@ function Entity:setPosition(x, y, params)
   end
 end
 
-
+---Moves the entity by a relative offset
+---@param x number? X offset to move (nil = 0)
+---@param y number? Y offset to move (nil = 0)
+---@param params? table If provided, animates movement with these transition params
+---@return void
 function Entity:move(x, y, params)
   if params then
     params.tag = params.tag or self.id
@@ -118,20 +171,32 @@ function Entity:move(x, y, params)
 end
 
 
+---Gets X position at specified anchor point
+---@param anchorX number? Anchor point (0-1, default uses entity anchor)
+---@param world table? World coordinate space reference
+---@return number x X position
 function Entity:getX(anchorX, world)
   local x, _ = self:getPosition(anchorX, nil, world)
 
   return x
 end
 
-
+---Gets Y position at specified anchor point
+---@param anchorY number? Anchor point (0-1, default uses entity anchor)
+---@param world table? World coordinate space reference
+---@return number y Y position
 function Entity:getY(anchorY, world)
   local _, y = self:getPosition(nil, anchorY, world)
 
   return y
 end
 
-
+---Gets position at specified anchor point in world or content coordinates
+---@param anchorX number? X anchor point (0-1)
+---@param anchorY number? Y anchor point (0-1)
+---@param world table? World coordinate space (defaults to battleField if _inGameElement)
+---@return number x X position
+---@return number y Y position
 function Entity:getPosition(anchorX, anchorY, world)
   assert(self.group.y, (tostring(self) or "UNKNOWN")..": operation over a removed object")
 
@@ -146,7 +211,12 @@ function Entity:getPosition(anchorX, anchorY, world)
   end
 end
 
-
+---Converts world coordinates to entity's local coordinate space
+---@param x number? World X coordinate (default 0)
+---@param y number? World Y coordinate (default 0)
+---@param world table? World reference (defaults to battleField)
+---@return number x Local X coordinate
+---@return number y Local Y coordinate
 function Entity:worldToLocal(x, y, world)
   x, y = x or 0, y or 0
 
@@ -158,7 +228,12 @@ function Entity:worldToLocal(x, y, world)
   return (self.group or self):contentToLocal(x, y)
 end
 
-
+---Converts entity's local coordinates to world coordinate space
+---@param x number? Local X coordinate (default 0)
+---@param y number? Local Y coordinate (default 0)
+---@param world table? World reference (defaults to battleField)
+---@return number x World X coordinate
+---@return number y World Y coordinate
 function Entity:localToWorld(x, y, world)
   x, y = x or 0, y or 0
   x, y = (self.group or self):localToContent(x, y)
@@ -171,23 +246,38 @@ function Entity:localToWorld(x, y, world)
   return x, y
 end
 
-
+---Converts local coordinates to content (screen) coordinates
+---@param x number? Local X (default 0)
+---@param y number? Local Y (default 0)
+---@return number x Content X coordinate
+---@return number y Content Y coordinate
 function Entity:localToContent(x, y)
   return self.group:localToContent(x or 0, y or 0)
 end
 
-
+---Converts content (screen) coordinates to local coordinates
+---@param x number? Content X (default 0)
+---@param y number? Content Y (default 0)
+---@return number x Local X coordinate
+---@return number y Local Y coordinate
 function Entity:contentToLocal(x, y)
   return self.group:contentToLocal(x or 0, y or 0)
 end
 
-
+---Moves entity to a new parent group, maintaining world position
+---@param group table New parent display group
+---@return void
 function Entity:relocate(group)
   self:setPosition(self:localToWorld(0, 0, group))
   group:insert(self.group)
 end
 
-
+---Calculates distance from entity to world coordinates
+---@param worldX number Target world X
+---@param worldY number Target world Y
+---@param selfX number? Entity local X offset (default 0)
+---@param selfY number? Entity local Y offset (default 0)
+---@return number distance Distance in pixels
 function Entity:distanceTo(worldX, worldY, selfX, selfY)
   local selfX, selfY = selfX or 0, selfY or 0
 
@@ -397,8 +487,13 @@ function Entity:performWithDelay(time, task)
 end
 
 
--- Object Flow ---------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+-- Lifecycle Management --
+------------------------------------------------------------------------------------------------------------------------
 
+---Resumes entity after being paused
+---Resumes all active transitions
+---@return void
 function Entity:resume()
   if not self._paused then return end
   self._paused = false
@@ -409,7 +504,9 @@ function Entity:resume()
   end
 end
 
-
+---Pauses the entity
+---Pauses all active transitions
+---@return void
 function Entity:pause()
   if self._paused then return end
   self._paused = true
@@ -420,9 +517,9 @@ function Entity:pause()
   end
 end
 
-
--- Interrupt: - Stops all the transitions and activities
---            - The entity stills initialized and active
+---Interrupts all entity activities (transitions and timers)
+---Entity remains initialized and can be restarted
+---@return void
 function Entity:interrupt()
   for k,v in pairs(self._transitions) do
     transition.cancel(k)
@@ -439,27 +536,27 @@ function Entity:interrupt()
   self._solarTimers = {}
 end
 
-
--- Stop: - Completely stops the entity
---       - Interrups any activity
---       - Interrups any activity
---       - The entity won't work again until a hard reset and a re-initialization
+---Completely stops the entity
+---Interrupts all activities
+---Entity won't work again until hard reset and re-initialization
+---@return void
 function Entity:stop()
   self:interrupt()
 end
 
-
--- Reset: - Bring the entity to a base state
---        - The entity remains initialized
+---Brings entity back to base state
+---Entity remains initialized
+---Override this method in subclasses to define reset behavior
+---@return void
 function Entity:reset()
 
 end
 
-
--- Hard reset: - Restore the entity as if it had never been initialized
---             - Set all the default values
---             - Completly stops the entity
---             - It's called at the begining of the entity init()
+---Restores entity to pristine state as if never initialized
+---Sets all default values and stops all activities
+---Called automatically at the beginning of initialize()
+---Override this method in subclasses to define default state
+---@return void
 function Entity:hardReset()
   -- self.group.isVisible = true
   -- self.group.alpha     = 1
@@ -475,11 +572,14 @@ function Entity:hardReset()
   -- self:reset()
 end
 
-
+---Clears entity completely
+---If dispose() method exists, calls hardReset() then dispose()
+---Otherwise just removes the entity
+---@return void
 function Entity:clear()
   self:stop()
 
-  if self.dispose then 
+  if self.dispose then
     self:hardReset()
     self:dispose()
   else
@@ -487,7 +587,9 @@ function Entity:clear()
   end
 end
 
-
+---Removes entity from display hierarchy
+---Stops all activities and removes display group
+---@return void
 function Entity:remove()
   self:stop()
 
@@ -496,18 +598,27 @@ function Entity:remove()
   end
 end
 
--- EventDispatch -------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+-- Event Handling --
+------------------------------------------------------------------------------------------------------------------------
 
+---Adds event listener to entity's display group
+---@param ... any Event listener parameters (eventName, listener)
+---@return void
 function Entity:addEventListener(...)
   self.group:addEventListener(...)
 end
 
-
+---Removes event listener from entity's display group
+---@param ... any Event listener parameters (eventName, listener)
+---@return void
 function Entity:removeEventListener(...)
   self.group:removeEventListener(...)
 end
 
-
+---Dispatches event to entity's display group
+---@param ... any Event parameters
+---@return void
 function Entity:dispatchEvent(...)
   self.group:dispatchEvent(...)
 end
