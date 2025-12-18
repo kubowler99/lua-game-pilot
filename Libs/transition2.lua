@@ -1,37 +1,52 @@
+---@class transition2
+---Game-time-aware transition library (alternative to Solar2D's built-in transition)
+---Uses game time system (_G.game.time) instead of real time
+---Respects time scaling and pausing - transitions slow down with slow-mo effects
+---Drop-in replacement for Corona/Solar2D transition library with same API
+---Provides convenience methods: fadeIn, fadeOut, moveTo, moveBy, scaleTo, scaleBy, blink
+local lib = {}
+
 local DEBUG_STRING = "Transition2:"
 
+---References to game time functions
 local getTimer        = _G.game.time.getTimer
 local subscribeTime   = _G.game.time.subscribe
 local unsubscribeTime = _G.game.time.unsubscribe
 
-local lib = {}
 -----------------------------------------------------------------------------------------
--- lib variables
+-- Internal State --
 -----------------------------------------------------------------------------------------
 
--- a table holding all transitions, active or paused
+---Table holding all transitions (active or paused)
+---@type table[]
 lib._transitionTable = {}
 
--- a table holding all the transitions, to be iterated by the pause / resume / cancel methods
+---Table holding transitions being iterated by pause/resume/cancel methods
+---@type table[]
 lib._enterFrameTweens = {}
 
--- a table holding all the sequences
+---Table holding all transition sequences
+---@type table<string, table>
 lib._sequenceTable = {}
 
--- the last time the application was suspended
+---Last time the application was suspended
+---@type number
 lib._prevSuspendTime = 0
 
--- control variable for the runtime listener
+---Control variable for the runtime listener
+---@type boolean
 lib._hasEventListener = false
 
--- reserved properties that cannot be transitioned
+---Reserved properties that cannot be transitioned
+---@type table<string, boolean>
 lib._reservedProperties =
 {
 	time = true, delay = true, delta = true, iterations = true, tag = true, transition = true,
 	onComplete = true, onPause = true, onResume = true, onCancel = true, onRepeat = true, onStart = true
 }
 
--- keys that have a number value
+---Keys that must have number values
+---@type table<string, boolean>
 lib._numberKeys =
 {
 	x=true, y=true, xScale=true, yScale=true, rotation=true, width=true, height=true,
@@ -41,6 +56,8 @@ lib._numberKeys =
 	delta=true,
 }
 
+---Debug mode flag
+---@type boolean
 lib.debugEnabled = false
 
 -----------------------------------------------------------------------------------------
@@ -160,9 +177,13 @@ local function _handleSuspendResume( event )
 end
 
 -----------------------------------------------------------------------------------------
--- to( targetObject, transitionParams )
--- transitions an object to the specified transitionParams
+-- Public API - Core Functions --
 -----------------------------------------------------------------------------------------
+
+---Transitions an object to specified property values using game time
+---@param targetObject table Display object to animate
+---@param transitionParams table Parameters: {time, delay, iterations, tag, transition, onStart, onComplete, onPause, onResume, onCancel, onRepeat, delta, ...properties}
+---@return table? tween Tween object that can be passed to pause/resume/cancel, or nil if invalid params
 lib.to = function( targetObject, transitionParams )
 	if nil == targetObject then
 		if lib.debugEnabled then
@@ -222,10 +243,10 @@ lib.to = function( targetObject, transitionParams )
 
 end
 
------------------------------------------------------------------------------------------
--- from( targetObject, transitionParams )
--- transitions an object from the specified transitionParams
------------------------------------------------------------------------------------------
+---Transitions an object from specified property values (sets initial values, then animates to current)
+---@param targetObject table Display object to animate
+---@param transitionParams table Parameters: {time, delay, iterations, tag, transition, onStart, onComplete, ...properties}
+---@return table? tween Tween object that can be passed to pause/resume/cancel, or nil if invalid params
 lib.from = function( targetObject, transitionParams )
 	if nil == targetObject then
 		if lib.debugEnabled then
@@ -272,9 +293,12 @@ lib.from = function( targetObject, transitionParams )
 end
 
 -----------------------------------------------------------------------------------------
--- pause( whatToPause )
--- pauses the whatToPause transition object, sequence, tag or display object
+-- Control Functions --
 -----------------------------------------------------------------------------------------
+
+---Pauses transitions
+---@param whatToPause? table|string Transition object, display object, tag string, or nil for all
+---@return void
 lib.pause = function( whatToPause )
 
 	-- we use the targetType variable to establish how we iterate at the end of this method
@@ -346,10 +370,9 @@ lib.pause = function( whatToPause )
 
 end
 
------------------------------------------------------------------------------------------
--- resume( whatToResume )
--- resumes the whatToResume transition object, display object, sequence, tag or nil for all
------------------------------------------------------------------------------------------
+---Resumes paused transitions
+---@param whatToResume? table|string Transition object, display object, tag string, or nil for all
+---@return void
 lib.resume = function( whatToResume )
 
 	-- we use the targetType variable to establish how we iterate at the end of this method
@@ -421,10 +444,9 @@ lib.resume = function( whatToResume )
 
 end
 
------------------------------------------------------------------------------------------
--- cancel( transitionObject )
--- cancels the transitionObject transition
------------------------------------------------------------------------------------------
+---Cancels transitions (triggers onCancel callback)
+---@param whatToCancel? table|string Transition object, display object, tag string, or nil for all
+---@return void
 lib.cancel = function( whatToCancel )
 
 	-- if no transitions, then don't cancel anything
@@ -763,13 +785,13 @@ lib.runSequence = function( sequenceName )
 end
 
 -----------------------------------------------------------------------------------------
--- convenience methods
+-- Convenience Methods --
 -----------------------------------------------------------------------------------------
 
------------------------------------------------------------------------------------------
--- blink( targetObject, actionDuration )
--- blinks the targetObject with the transition duration actionDuration
------------------------------------------------------------------------------------------
+---Blinks an object by continuously fading alpha between 0 and 1
+---@param targetObject table Display object to blink
+---@param params? table Parameters: {time, delay, transition, onComplete, onPause, onResume, onCancel, onStart, onRepeat, tag}
+---@return table? tween Tween object or nil
 lib.blink = function( targetObject, params )
 	if targetObject == nil then
 		if lib.debugEnabled then
@@ -812,10 +834,10 @@ lib.blink = function( targetObject, params )
 
 end
 
------------------------------------------------------------------------------------------
--- moveTo( targetObject, xCoord, yCoord, actionTime, actionDelay )
--- moves the targetObject to the xCoord, yCoord coordinates with the transition duration actionDuration and delay actionDelay
------------------------------------------------------------------------------------------
+---Moves an object to specified coordinates
+---@param targetObject table Display object to move
+---@param params? table Parameters: {x, y, time, delay, xScale, yScale, alpha, transition, callbacks, tag}
+---@return table? tween Tween object or nil
 lib.moveTo = function( targetObject, params )
 	if targetObject == nil then
 		if lib.debugEnabled then

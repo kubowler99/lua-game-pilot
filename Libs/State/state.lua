@@ -1,3 +1,8 @@
+---@class State
+---Reactive state management system with observer pattern
+---Manages hierarchical data with dot-notation paths (e.g., "player.health")
+---Notifies observers when values change
+---Supports sub-states for scoped access
 local Subject = require("Libs.State.subject")
 
 local type     = type
@@ -5,6 +10,12 @@ local deepcopy = pl.tablex.deepcopy
 
 local SH = Class("state")
 
+---Creates a new State
+---@param data table Initial state data
+---@param inGameObject? any Game object associated with this state
+---@param root? string Path prefix for nested states (internal use)
+---@param subjects? table<string, Subject> Shared subjects table (internal use)
+---@return State
 function SH:initialize(data, inGameObject, root, subjects)
   self.root         = root or ""
   self._subjects    = subjects or {}
@@ -12,7 +23,11 @@ function SH:initialize(data, inGameObject, root, subjects)
   self:setState(data, root and subjects)
 end
 
-
+---Creates a sub-state scoped to a specific path
+---Sub-state shares subjects with parent for unified observation
+---@param path string Dot-notation path to scope to (e.g., "player")
+---@param inGameObject? any Game object for this sub-state
+---@return State subState Sub-state scoped to the path
 function SH:getSubState(path, inGameObject)
   local data     = self:getValue(path)
   local root     = self.root..path.."."
@@ -21,6 +36,11 @@ function SH:getSubState(path, inGameObject)
 end
 
 
+---Sets a value at path and notifies observers
+---Creates nested tables as needed
+---@param path string Dot-notation path (e.g., "player.inventory.gold")
+---@param value any Value to set
+---@return void
 function SH:setValue(path, value)
   local tablePath = path:split(".")
   local table     = self._data
@@ -79,13 +99,20 @@ function SH:setValue(path, value)
 end
 
 
+---Adds an increment to a numeric value at path
+---@param path string Dot-notation path
+---@param increment number Amount to add (can be negative)
+---@return boolean|nil success False if increment is 0, otherwise void
 function SH:add(path, increment)
   if increment == 0 then return false end
 
   self:setValue(path, self:getValue(path)+increment)
 end
 
-
+---Subtracts a value (clamped to available amount)
+---@param path string Dot-notation path
+---@param value number Amount to subtract
+---@return number used Actual amount subtracted (clamped to current value)
 function SH:use(path, value)
   if value <= 0 then return 0 end
   local currentValue = self:getValue(path)
@@ -96,14 +123,19 @@ function SH:use(path, value)
   return value
 end
 
-
+---Subtracts from a numeric value at path
+---@param path string Dot-notation path
+---@param value number Amount to subtract
+---@return boolean|nil success False if value is 0, otherwise void
 function SH:substract(path, value)
   if value == 0 then return false end
 
   self:setValue(path, self:getValue(path)-value)
 end
 
-
+---Gets value at path
+---@param path string Dot-notation path (e.g., "player.name")
+---@return any value The value at the path
 function SH:getValue(path)
   local value = self._data
   for _,key in ipairs(path:split(".")) do
@@ -113,7 +145,13 @@ function SH:getValue(path)
   return value
 end
 
-
+---Observes a value at path for changes
+---Creates a Subject if one doesn't exist
+---@param path string Dot-notation path to observe
+---@param key any Unique key for this observer
+---@param observer function Observer callback: (key, event) -> boolean
+---@param initCall? boolean If true, calls observer immediately with current value
+---@return boolean success True if observer was added
 function SH:observe(path, key, observer, initCall)
   assert(path and key and observer, "here")
   if not self._subjects[self.root..path] then
@@ -122,7 +160,11 @@ function SH:observe(path, key, observer, initCall)
   return self._subjects[self.root..path]:subscribe(key, observer, initCall)
 end
 
-
+---Unobserves a value (removes observer)
+---Cleans up subject if no observers remain
+---@param path string Dot-notation path
+---@param key any Observer key to remove
+---@return void
 function SH:unobserve(path, key)
   local subject = self._subjects[self.root..path]
   subject:unsubscribe(key)
@@ -131,7 +173,10 @@ function SH:unobserve(path, key)
   end
 end
 
-
+---Replaces entire state data and notifies observers
+---@param state table New state data
+---@param doNotCopy? boolean If true, uses state directly without deep copy
+---@return void
 function SH:setState(state, doNotCopy)
   self._data = doNotCopy and state or deepcopy(state)
 
@@ -143,12 +188,17 @@ function SH:setState(state, doNotCopy)
   end
 end
 
-
+---Gets a deep copy of the entire state data
+---@return table data Deep copy of state data
 function SH:getData()
   return deepcopy(self._data)
 end
 
 
+---Merges data into current state and notifies observers of changes
+---@param data table Data to merge
+---@param secondWins? boolean If true, data overwrites current; if false, current overwrites data
+---@return void
 function SH:merge(data, secondWins)
   local changes = {}
 

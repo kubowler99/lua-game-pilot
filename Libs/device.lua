@@ -12,6 +12,19 @@
 -- Sample code is MIT licensed, see http://www.coronalabs.com/links/code/license
 -- Copyright (C) 2012 Corona Labs Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------
+
+---@class device
+---Device detection utility module
+---Provides boolean flags for platform and device-specific detection
+---Useful for conditional code based on platform (iOS/Android) or specific devices
+---@field isApple boolean True if running on any iOS device
+---@field isAndroid boolean True if running on any Android device
+---@field isGoogle boolean True if running on Google Play-compatible Android device
+---@field isKindleFire boolean True if running on Amazon Kindle Fire device
+---@field isNook boolean True if running on Barnes & Noble Nook device
+---@field is_iPad boolean True if running on iPad
+---@field isTall boolean True if device has tall aspect ratio (>1.5:1)
+---@field isSimulator boolean True if running in Solar2D simulator
 local M = {}
 
 --

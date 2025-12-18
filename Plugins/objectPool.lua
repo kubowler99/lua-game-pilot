@@ -1,11 +1,45 @@
+---@class ObjectPool
+---Object pooling system for performance optimization
+---Pre-allocates display objects to avoid costly creation during gameplay
+---Supports local (scene-specific) and global (persistent) pools
+---Includes debug visualization of pool usage statistics
 local M = {}
 
+------------------------------------------------------------------------------------------------------------------------
+-- Internal State --
+------------------------------------------------------------------------------------------------------------------------
+
+---Global object pools (persist across scenes)
+---@type table<string, PoolData>
 local globalObjectPool    = {}
+
+---Local object pools (cleared when scene changes)
+---@type table<string, PoolData>
 local localObjectPool     = {}
+
+---Counts of objects created beyond pool capacity (for debugging)
+---@type table<string, number>
 local unobjectPooledCount = {}
+
+---Helper group for temporarily holding disposed objects
+---@type table
 local helperGroup     = display.newGroup()
 
+---@class PoolData
+---@field count number Total number of objects in pool
+---@field used number Number of currently active objects
+---@field data List Array of pooled objects
+---@field factory function Factory function to create new objects
+---@field name string Name identifier for this pool
+
+------------------------------------------------------------------------------------------------------------------------
+-- Debug Visualization --
+------------------------------------------------------------------------------------------------------------------------
+
+---Function to update debug info display (nil if debug disabled)
+---@type function|nil
 local addObjectInfo
+
 if _G.DEBUG.OBJECT_POOL_DATA then
   local showArea
   local objects = {}
@@ -19,6 +53,11 @@ if _G.DEBUG.OBJECT_POOL_DATA then
   background.alpha   = 0.6
   background.anchorX = 0
   background.anchorY = 0
+
+  ---Updates on-screen debug display of pool statistics
+  ---@param objectName string Pool name
+  ---@param used number Number of active objects
+  ---@param total number Total pool size
   addObjectInfo = function(objectName, used, total)
     local spaces = ""
     for i=1,17-#objectName < 0 and 0 or 17-#objectName do
@@ -43,6 +82,15 @@ if _G.DEBUG.OBJECT_POOL_DATA then
 end
 
 
+------------------------------------------------------------------------------------------------------------------------
+-- Object Lifecycle --
+------------------------------------------------------------------------------------------------------------------------
+
+---Disposes an object back to its pool
+---Makes object invisible and moves to helper group
+---Called as method on pooled objects: object:dispose()
+---@param self table The pooled object
+---@return void
 local function dispose(self)
   if self.__used then
     self.__used = false
@@ -58,7 +106,17 @@ local function dispose(self)
   end
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Pool Registration --
+------------------------------------------------------------------------------------------------------------------------
 
+---Registers an object pool with custom factory function
+---Creates or resizes pool to specified count
+---@param name string Pool name identifier
+---@param count number Number of objects to pre-allocate
+---@param factory function Function that creates new object instances
+---@param isGlobal? boolean If true, pool persists across scenes (default: false/local)
+---@return void
 function M.registerWithFactory(name, count, factory, isGlobal)
   local objectPool = localObjectPool
   if isGlobal then objectPool = globalObjectPool end
@@ -115,21 +173,43 @@ function M.registerWithFactory(name, count, factory, isGlobal)
   end
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Pool Registration Helpers --
+------------------------------------------------------------------------------------------------------------------------
 
+---Registers a sprite pool (convenience wrapper)
+---@param name string Pool name identifier
+---@param count number Number of sprites to pre-allocate
+---@param sheet table Sprite sheet object
+---@param sequenceData table Sprite sequence data
+---@param isGlobal? boolean If true, pool persists across scenes
+---@return void
 function M.registerSprite(name, count, sheet, sequenceData, isGlobal)
   M.registerWithFactory(name, count, function()
       return display.newSprite(sheet, sequenceData)
   end, isGlobal)
 end
 
-
+---Registers an image pool (convenience wrapper)
+---@param name string Pool name identifier
+---@param count number Number of images to pre-allocate
+---@param path string Image file path
+---@param isGlobal? boolean If true, pool persists across scenes
+---@return void
 function M.registerImage(name, count, path, isGlobal)
   M.registerWithFactory(name, count, function()
       return display.newImage(path)
   end, isGlobal)
 end
 
-
+---Registers an image rect pool (convenience wrapper for scaled images)
+---@param name string Pool name identifier
+---@param count number Number of image rects to pre-allocate
+---@param path string Image file path
+---@param width number Width in pixels
+---@param height number Height in pixels
+---@param isGlobal? boolean If true, pool persists across scenes
+---@return void
 function M.registerImageRect(name, count, path, width, height, isGlobal)
   M.registerWithFactory(name, count, function()
       return display.newImageRect(path, width, height)
@@ -201,6 +281,14 @@ if _G.DEBUG.OBJECT_POOL then
   Runtime:addEventListener("enterFrame", M)
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Object Retrieval --
+------------------------------------------------------------------------------------------------------------------------
+
+---Gets an object from the pool
+---If pool is full, creates new object dynamically and logs warning
+---@param name string Pool name identifier
+---@return table object The pooled object (made visible and ready to use)
 function M.getObject(name)
   local objectPool
   if localObjectPool[name] then
@@ -253,7 +341,13 @@ function M.getObject(name)
   end
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Cleanup --
+------------------------------------------------------------------------------------------------------------------------
 
+---Clears all local (scene-specific) object pools
+---Removes all objects and resets pool registry
+---@return void
 function M.cleanLocal()
   for _,objectPool in pairs(localObjectPool) do
     local data = objectPool.data
@@ -268,7 +362,9 @@ function M.cleanLocal()
   localObjectPool = {}
 end
 
-
+---Clears all global (persistent) object pools
+---Removes all objects and resets pool registry
+---@return void
 function M.cleanGlobal()
   for _,objectPool in pairs(globalObjectPool) do
     local data = objectPool.data
@@ -283,7 +379,12 @@ function M.cleanGlobal()
   localObjectPool = {}
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Debug Info --
+------------------------------------------------------------------------------------------------------------------------
 
+---Prints usage statistics for all global pools
+---@return void
 function M.getObjectCount()
   print("--------- BUFFER COUNT ---------")
   for obj,data in pairs(globalObjectPool) do
