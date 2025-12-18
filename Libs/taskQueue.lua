@@ -1,5 +1,10 @@
+---@class TaskQueue
+---@field _tasks List Queue of pending tasks
+---@field timeElapsed number Total elapsed time for task scheduling
 local TaskQueue = {}
 
+---Creates a new TaskQueue instance
+---@return TaskQueue queue The new task queue
 function TaskQueue.new()
   local tq = {}
 

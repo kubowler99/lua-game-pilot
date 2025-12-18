@@ -1,6 +1,12 @@
 local TaskQueue = require("Libs.taskQueue")
 local SoundPlayer = require("Plugins.soundPlayer")
 
+---@class List : table
+---@field new fun(): List
+---@field append fun(self: List, value: any)
+---@field remove_value fun(self: List, value: any)
+---@field contains fun(self: List, value: any): boolean
+
 ------------------------------------------------------------------------------------------------------------------------
 -- Time Controller --
 ------------------------------------------------------------------------------------------------------------------------
