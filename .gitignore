@@ -1,1 +1,58 @@
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Lua
+luac.out
+*.luac
+*.lua~
+
+# LuaRocks
+luarocks.lock
+*.rockspec
+
+# Solar2D / Corona SDK
+*.build
+*.apk
+*.ipa
+*.app
+*.zip
+Builds/
+build/
+*.mobileprovision
+*.p12
+*.certSigningRequest
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# VSCode
+.vscode/
+*.code-workspace
+.history/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

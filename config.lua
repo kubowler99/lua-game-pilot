@@ -1,7 +1,7 @@
 _G.application = {
 	content = {
 		width  = 640,
-		height = 960,
+		height = 1136,
 		scale  = "letterbox",
 		fps    = 60,
 
