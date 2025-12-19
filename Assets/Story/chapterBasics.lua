@@ -1,3 +1,4 @@
+---@class chapterBasics
 local game      = _G.game
 local shortcuts = game.shortcuts
 

@@ -1,3 +1,4 @@
+---@class mainStory : chapterBasics
 local ChapterBasics = require('Assets.Story.chapterBasics')
 
 local game        = _G.game

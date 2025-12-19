@@ -197,7 +197,7 @@ lib.to = function( targetObject, transitionParams )
 		end
 	end
 
-	local tween = nil
+	local tween
 
 	if targetObject and transitionParams then
 		-- faster to access a local timer var than a global one
@@ -302,8 +302,8 @@ end
 lib.pause = function( whatToPause )
 
 	-- we use the targetType variable to establish how we iterate at the end of this method
-	local targetType = nil
-	local iterationTarget = nil
+	local targetType
+	local iterationTarget
 
 	-- transition object or display object
 	if "table" == type( whatToPause ) then
@@ -376,8 +376,8 @@ end
 lib.resume = function( whatToResume )
 
 	-- we use the targetType variable to establish how we iterate at the end of this method
-	local targetType = nil
-	local iterationTarget = nil
+	local targetType
+	local iterationTarget
 
 	-- transition object or display object
 	if "table" == type( whatToResume ) then
@@ -585,7 +585,7 @@ function lib:enterFrame ( time, timeElapsed )
 					end
 				else
 					-- the easing function easing.continuousLoop with infinite iterations cannot set the object keys to the finish values.
-					-- also, the last iteration of a transition with easing.continousLoop has to return the object to the start properties,
+					-- also, the last iteration of a transition with easing.continuousLoop has to return the object to the start properties,
 					-- not to the end ones.
 					if tween._transition == easing.continuousLoop then
 						if tween.iterations == 1 then
@@ -817,7 +817,7 @@ lib.blink = function( targetObject, params )
 	{
 		delay = actionDelay,
 		time = actionTime * 0.5,
-		transition = easing.continousLoop,
+		transition = easing.continuousLoop,
 		iterations = -1,
 		onComplete = actionOnComplete,
 		onPause = actionOnPause,
@@ -846,7 +846,7 @@ lib.moveTo = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 
@@ -903,7 +903,7 @@ lib.moveBy = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 
@@ -960,7 +960,7 @@ lib.scaleTo = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 
@@ -1017,7 +1017,7 @@ lib.scaleBy = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 
@@ -1074,7 +1074,7 @@ lib.fadeIn = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 
@@ -1126,7 +1126,7 @@ lib.fadeOut = function( targetObject, params )
 	end
 
 	local paramsTable = params or {}
-	local addedTransition = nil
+	local addedTransition
 
 	if targetObject then
 

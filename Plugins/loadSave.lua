@@ -11,7 +11,7 @@ local LoadSave = {}
 
 ---The current saved data table (loaded from JSON)
 ---@type table|nil
-local savedData     = nil
+local savedData
 
 ---Whether sandbox mode is active (prevents saving to disk)
 ---@type boolean
