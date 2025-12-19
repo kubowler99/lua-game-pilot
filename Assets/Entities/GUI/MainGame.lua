@@ -1,3 +1,4 @@
+---@class GUI : Entity
 local Entity = require("Assets.Entities.entity")
 
 local ButtonPlayPause = require("Assets.Entities.GUI.Buttons.buttonPlayPause")

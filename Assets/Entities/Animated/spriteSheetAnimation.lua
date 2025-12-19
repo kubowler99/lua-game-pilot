@@ -1,3 +1,4 @@
+---@class spriteSheetAnimation : AnimationBase
 local AnimationBase = require("Assets.Entities.Animated.animation")
 
 -- ---------------------------------------------------------------------------------------------------------------------

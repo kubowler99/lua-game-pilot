@@ -55,7 +55,7 @@ Entity.__sfx      = {}
 local objects = {}
 
 ---Constructor - creates entity and initializes it
----@param ... any Parameters passed to create()
+---@vararg any Parameters passed to create()
 ---@return void
 function Entity:initialize(...)
   self:create(...)
@@ -279,10 +279,10 @@ end
 ---@param selfY number? Entity local Y offset (default 0)
 ---@return number distance Distance in pixels
 function Entity:distanceTo(worldX, worldY, selfX, selfY)
-  local selfX, selfY = selfX or 0, selfY or 0
+  selfX, selfY = selfX or 0, selfY or 0
 
   local dX, dY = self:worldToLocal(worldX, worldY)
-  dX, dY = dX-(selfX or 0), dY-(selfY or 0)
+  dX, dY = dX-selfX, dY-selfY
 
   return math.hypotenuse(dX,dY)
 end
@@ -318,7 +318,7 @@ end
 
 
 function Entity:_vanish(params)
-  local params = params or {}
+  params = params or {}
 
   params.time       = params.time or 800
   params.transition = params.transition or easing.outQuad
@@ -603,21 +603,21 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 
 ---Adds event listener to entity's display group
----@param ... any Event listener parameters (eventName, listener)
+---@vararg any Event listener parameters (eventName, listener)
 ---@return void
 function Entity:addEventListener(...)
   self.group:addEventListener(...)
 end
 
 ---Removes event listener from entity's display group
----@param ... any Event listener parameters (eventName, listener)
+---@vararg any Event listener parameters (eventName, listener)
 ---@return void
 function Entity:removeEventListener(...)
   self.group:removeEventListener(...)
 end
 
 ---Dispatches event to entity's display group
----@param ... any Event parameters
+---@vararg any Event parameters
 ---@return void
 function Entity:dispatchEvent(...)
   self.group:dispatchEvent(...)

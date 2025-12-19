@@ -1,3 +1,4 @@
+---@class animated : Entity
 local Entity  = require("Assets.Entities.Animated.entity")
 
 local time = _G.game.time
