@@ -37,16 +37,16 @@ if _G.DEBUG.SKIP_ERRORS then
          event.errorMessage .. "\n" ..
          event.stackTrace .. "\n\n\n\n"..
          "**IMPORTANT**!!: Pressing continue may trigger more unexpected issues"
-  
-     native.showAlert( "Handling the unhandled error", errorMessage, {"CONTINUE", "QUIT GAME"}, function(event)
-       if ( event.action == "clicked" ) then
-         local i = event.index
+
+     native.showAlert( "Handling the unhandled error", errorMessage, {"CONTINUE", "QUIT GAME"}, function(alertEvent)
+       if ( alertEvent.action == "clicked" ) then
+         local i = alertEvent.index
          if i == 1 then
          -- DO NOTHING
-  
+
          elseif i == 2 then
          os.exit(1)
-  
+
          end
        end
      end)

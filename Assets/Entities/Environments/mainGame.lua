@@ -1,3 +1,4 @@
+---@class mainGame-environment : Entity
 local Entity = require("Assets.Entities.entity")
 
 local Background = require("Assets.Entities.Environments.MainGame.background")

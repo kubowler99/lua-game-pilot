@@ -127,7 +127,7 @@ end
 ---@param path string Dot-notation path
 ---@param value number Amount to subtract
 ---@return boolean|nil success False if value is 0, otherwise void
-function SH:substract(path, value)
+function SH:subtract(path, value)
   if value == 0 then return false end
 
   self:setValue(path, self:getValue(path)-value)
@@ -160,7 +160,7 @@ function SH:observe(path, key, observer, initCall)
   return self._subjects[self.root..path]:subscribe(key, observer, initCall)
 end
 
----Unobserves a value (removes observer)
+---Unobserve a value (removes observer)
 ---Cleans up subject if no observers remain
 ---@param path string Dot-notation path
 ---@param key any Observer key to remove
@@ -212,16 +212,15 @@ function SH:merge(data, secondWins)
         changes[p..k] = v
         f(t1[k], v, p..k..".")
       else
-        local f2; f2 = function(t, p)
+        local f2; f2 = function(t, pathPrefix)
           for k2,v2 in pairs(t) do
             if type(v2) == 'table' then
-              changes[p..k2] = {}
-              f2(v2[k2], p..k2..".")
+              f2(v2[k2], pathPrefix..k2..".")
             else
-              changes[p..k2] = v2
+              changes[pathPrefix..k2] = v2
             end
           end
-          f2(v, p)
+          f2(v, pathPrefix)
         end
 
         if t1[k] ~= v then

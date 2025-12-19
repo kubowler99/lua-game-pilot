@@ -257,8 +257,8 @@ if _G.DEBUG.OBJECT_POOL then
     local time = system.getTimer()
 
     local total = 0
-    for _,count in pairs(unobjectPooledCount) do
-      total = total + count
+    for _, unpooledCount in pairs(unobjectPooledCount) do
+      total = total + unpooledCount
     end
 
     if total == 0 then
@@ -267,9 +267,9 @@ if _G.DEBUG.OBJECT_POOL then
       if time - prevTime > 5000 then
         prevTime = time
         local i = 0
-        for item,count in pairs(unobjectPooledCount) do
-          if count > 0 then
-            newItem(item, count, i)
+        for item, unpooledCount in pairs(unobjectPooledCount) do
+          if unpooledCount > 0 then
+            newItem(item, unpooledCount, i)
             i = i+1
             unobjectPooledCount[item] = 0
           end

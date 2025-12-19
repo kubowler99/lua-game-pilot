@@ -1,3 +1,4 @@
+---@class GUIEntity : Entity
 -- Libs
 local Entity = require("Assets.Entities.entity")
 

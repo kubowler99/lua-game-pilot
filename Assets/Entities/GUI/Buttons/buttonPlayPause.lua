@@ -1,3 +1,4 @@
+---@class buttonPlayPause : GUIEntity
 local GUIEntity = require("Assets.Entities.GUI.GUIEntity")
 
 local time = _G.game.time
@@ -6,7 +7,7 @@ local time = _G.game.time
 -- Button
 -- ---------------------------------------------------------------------------------------------------------------------
 
-local Button = Class("playPause-button", GUIEntity)
+local Button = Class("buttonPlayPause", GUIEntity)
 
 Button.__defaultEffect   = "displacement"
 Button.__visiblePosition = {screen.edgeX - 22, screen.originY + 19}

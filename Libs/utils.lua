@@ -138,7 +138,7 @@ end
 ---@param o1 any First object to compare
 ---@param o2 any Second object to compare
 ---@return boolean equal True if objects are deeply equal
-local equals; equals = function(o1, o2)
+local function equals(o1, o2)
   if o1 == o2 then return true end
   local o1Type = type(o1)
   local o2Type = type(o2)
@@ -183,7 +183,7 @@ _G.shuffle = shuffle
 ---@param group table Display group to measure
 ---@param c number Current depth level (internal parameter)
 ---@return number depth Maximum depth of the group hierarchy
-local getDepth; getDepth = function(group, c)
+local function getDepth(group, c)
   local depth = c
   if group.numChildren then
     for i = 1,group.numChildren do
@@ -210,10 +210,11 @@ end
 ---@param sep? string Separator character (defaults to ":")
 ---@return table fields Array of split string parts
 function string:split(sep)
-   local sep, fields = sep or ":", {}
-   local pattern = string.format("([^%s]+)", sep)
-   self:gsub(pattern, function(c) fields[#fields+1] = c end)
-   return fields
+    sep = sep or ":"
+    local fields = {}
+    local pattern = string.format("([^%s]+)", sep)
+    self:gsub(pattern, function(c) fields[#fields+1] = c end)
+    return fields
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -234,7 +235,7 @@ local fcomp_default = function( a,b ) return a < b end
 ---@return number index Position where value was inserted
 function table.bininsert(t, value, fcomp)
    -- Initialize compare function
-   local fcomp = fcomp or fcomp_default
+   fcomp = fcomp or fcomp_default
    --  Initialize numbers
    local iStart,iEnd,iMid,iState = 1,#t,1,0
    -- Get insert position

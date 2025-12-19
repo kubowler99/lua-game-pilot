@@ -103,7 +103,7 @@ local function _assertType(val, name, expected_type, type_to_s)
   end
 end
 
-local function _assertInexistingState(klass, stateName)
+local function _assertInExistingState(klass, stateName)
   if klass.states[stateName] ~= nil then
     error("State " .. tostring(stateName) .. " already exists on " .. tostring(klass) )
   end
@@ -153,7 +153,7 @@ end
 function Stateful.static:addState(stateName, superState, baseTable)
   superState = superState or _BaseState
   _assertType(stateName, 'stateName', 'string')
-  -- _assertInexistingState(self, stateName)
+  -- _assertInExistingState(self, stateName)
   self.static.states[stateName] = setmetatable(baseTable or {}, { __index = superState })
   self.static.states[stateName].superState = self
   return self.static.states[stateName]

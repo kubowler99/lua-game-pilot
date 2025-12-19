@@ -28,7 +28,7 @@ local _timeElapsed    = 0
 
 ---Timestamp when pause started (for calculating pause duration)
 ---@type number|nil
-local _startPauseTime = nil
+local _startPauseTime
 
 ---Objects pending subscription to enterFrame events
 ---@type table<any, any>
@@ -160,15 +160,17 @@ end
 -- Event Listeners --
 ------------------------------------------------------------------------------------------------------------------------
 
+--[[
 ---Performance tracking arrays (for debug/profiling)
 ---@type table
-local avrgArray = {}
+local avgArray = {}
 ---@type number
 local average = 0
 ---@type number
 local worst  = 0
 ---@type number
 local better = 9999999
+--]]
 
 ---Core enterFrame callback - processes time and updates all subscribers
 ---Called every frame by Runtime:addEventListener("enterFrame", Time)
@@ -222,15 +224,15 @@ end
 
 ---Creates a "hit lag" effect - briefly slows time then recovers
 ---Useful for impact feedback in action games
----@param strenght number Strength multiplier for effect duration (typically 0.5-2.0)
+---@param strength number Strength multiplier for effect duration (typically 0.5-2.0)
 ---@return void
-function Time.hitLag(strenght)
+function Time.hitLag(strength)
   transition.cancel("time")
   local timeScale = Time.scale
 
   transition.to(Time, {
     tag        = "time",
-    time       = 40*strenght,
+    time       = 40* strength,
     scale      = .05,
     transition = easing.outQuad,
     onCancel = function()
@@ -239,7 +241,7 @@ function Time.hitLag(strenght)
     onComplete = function()
       transition.to(Time, {
         tag        = "time",
-        time       = 80*strenght,
+        time       = 80* strength,
         scale      = timeScale,
         transition = easing.outQuad,
         onCancel = function()
