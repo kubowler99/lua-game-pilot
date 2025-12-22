@@ -454,6 +454,52 @@ Most IDEs support luacheck integration:
 
 The `.luacheckrc` file will be automatically detected by these tools.
 
+### Code Formatting
+
+This project uses **[EditorConfig](https://editorconfig.org/)** to maintain consistent formatting across different editors and IDEs.
+
+#### EditorConfig Settings
+
+The `.editorconfig` file defines:
+- **Charset**: UTF-8
+- **Line Endings**: LF (Unix-style)
+- **Indentation**: 2 spaces for Lua files
+- **Trailing Whitespace**: Trimmed automatically
+- **Final Newline**: Added automatically
+- **Max Line Length**: 120 characters (Lua files)
+
+#### Editor Support
+
+EditorConfig is supported by most modern editors:
+
+**Out-of-the-box support:**
+- VS Code
+- IntelliJ IDEA / PyCharm / WebStorm
+- Neovim (with plugin)
+- Sublime Text
+- Atom
+
+**Plugin required:**
+- Vim: Install [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim)
+- Emacs: Install [editorconfig-emacs](https://github.com/editorconfig/editorconfig-emacs)
+
+**VS Code Setup:**
+1. Install the [EditorConfig extension](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+2. Settings will be applied automatically
+
+**IntelliJ/IDEA:**
+- Built-in support, no plugin needed
+- Enable: Settings → Editor → Code Style → Enable EditorConfig support
+
+#### Manual Formatting
+
+If your editor doesn't support EditorConfig, follow these rules:
+- Use 2 spaces for indentation (no tabs)
+- Use LF line endings (not CRLF)
+- Add newline at end of file
+- Remove trailing whitespace
+- Keep lines under 120 characters
+
 ---
 
 ## Documentation
