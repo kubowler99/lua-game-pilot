@@ -28,7 +28,8 @@ dependencies = {
    "busted >= 2.0.0",     -- Testing framework
    "middleclass >= 4.1.0", -- OOP class system
    "ldoc >= 1.4.6",       -- Documentation generator
-   "luacov >= 0.15.0"     -- Coverage analysis tool
+   "luacov >= 0.15.0",    -- Coverage analysis tool
+   "luacheck >= 0.23.0"   -- Static code analyzer
 }
 
 build = {
