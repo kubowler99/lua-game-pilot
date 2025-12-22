@@ -243,7 +243,25 @@ This is a production-ready template suitable for 2D games requiring state manage
 
 ### Installation
 
-#### Using LuaRocks (Recommended)
+#### Quick Start with Make (Recommended)
+
+The project includes a Makefile for convenient development:
+
+```bash
+# Install all dependencies
+make install
+
+# Or install only development tools
+make install-dev
+
+# Check installation status
+make status
+
+# Show all available commands
+make help
+```
+
+#### Using LuaRocks Directly
 
 Install project dependencies using LuaRocks:
 
@@ -255,6 +273,8 @@ luarocks install --only-deps lua-game-pilot-dev-1.rockspec
 luarocks install penlight
 luarocks install busted
 luarocks install middleclass
+luarocks install ldoc
+luarocks install luacov
 ```
 
 #### Manual Installation
@@ -281,19 +301,181 @@ luarocks install busted
 
 ---
 
+## Development Workflow
+
+This project includes a **Makefile** with convenient commands for common development tasks.
+
+### Available Commands
+
+#### Setup Commands
+```bash
+make install        # Install all dependencies via LuaRocks
+make install-dev    # Install only development dependencies
+make status         # Show project and dependencies status
+```
+
+#### Testing Commands
+```bash
+make test                    # Run all tests
+make test-verbose            # Run tests with verbose output
+make test-coverage           # Run tests with coverage report
+make test-file FILE=<path>   # Run specific test file
+make test-watch              # Watch files and auto-run tests (requires entr)
+```
+
+#### Documentation Commands
+```bash
+make docs          # Generate API documentation
+make docs-open     # Generate and open documentation in browser
+```
+
+#### Code Quality Commands
+```bash
+make lint          # Run Lua linter (luacheck)
+make format        # Format code (stylua)
+make validate      # Validate rockspec file
+make check         # Run lint + tests
+```
+
+#### Cleanup Commands
+```bash
+make clean         # Remove generated files (coverage, docs)
+make clean-all     # Remove all generated files including dependencies
+```
+
+#### Development Workflow
+```bash
+make dev-setup     # Complete development environment setup
+make dev-check     # Run lint + coverage tests
+make ci            # Run all CI checks (install, test, lint, validate)
+```
+
+### Quick Development Workflow
+
+```bash
+# Initial setup
+make install
+
+# During development
+make test-watch    # Auto-run tests on file changes
+
+# Before committing
+make dev-check     # Ensure code quality and tests pass
+
+# Generate documentation
+make docs-open     # View API docs in browser
+```
+
+### Example Usage
+
+```bash
+# Run tests for a specific module
+make test-file FILE=spec/libs/utils_spec.lua
+
+# Check coverage and generate report
+make test-coverage
+cat luacov.report.out
+
+# Clean up before switching branches
+make clean
+```
+
+---
+
+## Code Quality
+
+### Linting
+
+This project uses **[Luacheck](https://github.com/lunarmodules/luacheck)** for static code analysis.
+
+#### Running the Linter
+
+Using Make (recommended):
+```bash
+# Run linter on all project files
+make lint
+
+# Run linter as part of quality checks
+make check  # Runs lint + tests
+```
+
+Or using Luacheck directly:
+```bash
+# Install luacheck if not already installed
+luarocks install luacheck
+
+# Run linter
+luacheck Libs Plugins Assets main.lua config.lua
+
+# Check specific file
+luacheck Libs/utils.lua
+
+# Show only errors (no warnings)
+luacheck --no-warnings Libs/
+```
+
+#### Linter Configuration
+
+Linting is configured in `.luacheckrc`:
+- **Lua Version**: 5.1 (Solar2D compatibility)
+- **Solar2D Globals**: All Solar2D APIs recognized (`display`, `timer`, `transition`, etc.)
+- **Project Globals**: Custom globals defined (`_G.game`, `_G.savedData`, `Class`, etc.)
+- **Excludes**: Third-party libraries (`pl/`, `middleclass`, `stateful`)
+- **Max Line Length**: 120 characters
+- **Test Files**: Busted globals automatically recognized
+
+#### Common Linter Warnings
+
+Luacheck is configured to ignore common Solar2D patterns:
+- Unused callback parameters (211/212)
+- Unused loop variables (213)
+- Variable shadowing in nested scopes (421/422)
+- Values assigned but unused (311/312)
+
+#### Fixing Linter Issues
+
+```bash
+# Run linter to see issues
+make lint
+
+# Common fixes:
+# - Remove unused variables
+# - Add underscore prefix for intentionally unused: `local _unused = value`
+# - Use variables or remove assignments
+# - Fix line length by breaking long lines
+```
+
+#### IDE Integration
+
+Most IDEs support luacheck integration:
+- **VS Code**: Install [vscode-lua](https://marketplace.visualstudio.com/items?itemName=sumneko.lua) extension
+- **IntelliJ**: Built-in Lua plugin supports luacheck
+- **Neovim**: Use [null-ls](https://github.com/jose-elias-alvarez/null-ls.nvim) or [nvim-lint](https://github.com/mfussenegger/nvim-lint)
+
+The `.luacheckrc` file will be automatically detected by these tools.
+
+---
+
 ## Documentation
 
 This project uses **[LDoc](https://github.com/lunarmodules/LDoc)** for generating API documentation and **Lua Language Server** for IDE support.
 
 ### Generating Documentation
 
-Install LDoc if not already installed:
+Using Make (recommended):
 ```bash
-luarocks install ldoc
+# Generate documentation
+make docs
+
+# Generate and open in browser
+make docs-open
 ```
 
-Generate HTML documentation:
+Or using LDoc directly:
 ```bash
+# Install LDoc if not already installed
+luarocks install ldoc
+
 # Generate documentation
 ldoc .
 
@@ -365,6 +547,25 @@ This project uses **[Busted](https://olivinelabs.com/busted/)** for unit testing
 
 ### Running Tests
 
+Using Make (recommended):
+```bash
+# Run all tests
+make test
+
+# Run with verbose output
+make test-verbose
+
+# Run with coverage report
+make test-coverage
+
+# Run specific test file
+make test-file FILE=spec/libs/utils_spec.lua
+
+# Watch files and auto-run tests (requires entr)
+make test-watch
+```
+
+Or using Busted directly:
 ```bash
 # Run all tests
 busted
@@ -377,9 +578,6 @@ busted --verbose
 
 # Run tests with coverage
 busted --coverage
-
-# Run with coverage profile (defined in .busted)
-busted -o utfTerminal --coverage
 ```
 
 ### Test Coverage
