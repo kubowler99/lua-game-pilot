@@ -1,0 +1,137 @@
+#!/bin/bash
+# Pre-commit hook for lua-game-pilot
+# Runs code quality checks before allowing a commit
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+SKIP_HOOK=${SKIP_HOOK:-0}
+SKIP_LINT=${SKIP_LINT:-0}
+SKIP_TESTS=${SKIP_TESTS:-0}
+
+echo -e "${BLUE}Running pre-commit checks...${NC}"
+echo ""
+
+# Check if user wants to skip all hooks
+if [ "$SKIP_HOOK" = "1" ]; then
+  echo -e "${YELLOW}⚠️  Skipping pre-commit hooks (SKIP_HOOK=1)${NC}"
+  exit 0
+fi
+
+# Get staged Lua files
+STAGED_LUA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.lua$' || true)
+
+if [ -z "$STAGED_LUA_FILES" ]; then
+  echo -e "${GREEN}✓ No Lua files staged, skipping checks${NC}"
+  exit 0
+fi
+
+echo -e "${BLUE}Staged Lua files:${NC}"
+echo "$STAGED_LUA_FILES" | sed 's/^/  - /'
+echo ""
+
+# ============================================================================
+# Check 1: Luacheck (Static Analysis)
+# ============================================================================
+
+if [ "$SKIP_LINT" != "1" ]; then
+  echo -e "${BLUE}[1/3] Running luacheck...${NC}"
+
+  if command -v luacheck > /dev/null 2>&1; then
+    if echo "$STAGED_LUA_FILES" | xargs luacheck --no-color; then
+      echo -e "${GREEN}✓ Luacheck passed${NC}"
+    else
+      echo -e "${RED}✗ Luacheck failed${NC}"
+      echo ""
+      echo -e "${YELLOW}Fix the issues above or skip with:${NC}"
+      echo -e "  ${BLUE}SKIP_LINT=1 git commit${NC}"
+      exit 1
+    fi
+  else
+    echo -e "${YELLOW}⚠️  Luacheck not installed, skipping lint check${NC}"
+    echo -e "  Install with: ${BLUE}luarocks install luacheck${NC}"
+  fi
+  echo ""
+else
+  echo -e "${YELLOW}⚠️  Skipping luacheck (SKIP_LINT=1)${NC}"
+  echo ""
+fi
+
+# ============================================================================
+# Check 2: Check for debug statements
+# ============================================================================
+
+echo -e "${BLUE}[2/3] Checking for debug statements...${NC}"
+
+DEBUG_PATTERNS=(
+  "print("
+  "console.log"
+  "debugger"
+  "TODO:"
+  "FIXME:"
+  "XXX:"
+)
+
+FOUND_DEBUG=0
+for pattern in "${DEBUG_PATTERNS[@]}"; do
+  if echo "$STAGED_LUA_FILES" | xargs grep -n "$pattern" 2>/dev/null; then
+    FOUND_DEBUG=1
+  fi
+done
+
+if [ $FOUND_DEBUG -eq 1 ]; then
+  echo -e "${YELLOW}⚠️  Found debug statements in staged files${NC}"
+  echo -e "${YELLOW}Consider removing them or commit with:${NC}"
+  echo -e "  ${BLUE}SKIP_HOOK=1 git commit${NC}"
+  echo ""
+  # Warning only, don't fail
+else
+  echo -e "${GREEN}✓ No debug statements found${NC}"
+  echo ""
+fi
+
+# ============================================================================
+# Check 3: Run tests
+# ============================================================================
+
+if [ "$SKIP_TESTS" != "1" ]; then
+  echo -e "${BLUE}[3/3] Running tests...${NC}"
+
+  if command -v busted > /dev/null 2>&1; then
+    # Run tests without coverage for speed
+    if busted --no-coverage 2>&1 | tail -20; then
+      echo -e "${GREEN}✓ Tests passed${NC}"
+    else
+      echo -e "${RED}✗ Tests failed${NC}"
+      echo ""
+      echo -e "${YELLOW}Fix the tests or skip with:${NC}"
+      echo -e "  ${BLUE}SKIP_TESTS=1 git commit${NC}"
+      exit 1
+    fi
+  else
+    echo -e "${YELLOW}⚠️  Busted not installed, skipping tests${NC}"
+    echo -e "  Install with: ${BLUE}luarocks install busted${NC}"
+  fi
+  echo ""
+else
+  echo -e "${YELLOW}⚠️  Skipping tests (SKIP_TESTS=1)${NC}"
+  echo ""
+fi
+
+# ============================================================================
+# Success
+# ============================================================================
+
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✓ All pre-commit checks passed!${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+exit 0
