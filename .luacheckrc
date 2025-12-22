@@ -121,6 +121,10 @@ files["spec/"] = {
     "stub",
     "mock",
   },
+  -- Ignore warnings common in test files
+  ignore = {
+    "122",  -- Setting read-only field (e.g., package.loaded for module reloading)
+  },
 }
 
 files["Debug/"] = {

@@ -1,6 +1,9 @@
 -- Use lunajson for JSON encoding/decoding in tests
 local json = require("lunajson")
 
+-- Save original io before mocking
+local originalIo = io
+
 -- Mock system module for file paths
 _G.system = _G.system or {}
 _G.system.pathForFile = function(filename, directory)
@@ -22,6 +25,9 @@ function mockIo.open(path, mode)
       write = function(self, content)
         mockFileSystem[path] = content
       end,
+      close = function(self)
+        -- No-op
+      end,
     }
   end
   return nil
@@ -30,8 +36,6 @@ end
 function mockIo.close(file)
   -- No-op
 end
-
-_G.io = mockIo
 
 describe("LoadSave", function()
   local LoadSave
@@ -44,6 +48,9 @@ describe("LoadSave", function()
     -- Suppress print output during tests
     originalPrint = print
     _G.print = function() end
+
+    -- Apply io mock BEFORE loading the module
+    _G.io = mockIo
 
     -- Reset the module by removing it from package.loaded
     package.loaded["Plugins.loadSave"] = nil
@@ -71,8 +78,9 @@ describe("LoadSave", function()
   end)
 
   after_each(function()
-    -- Restore print
+    -- Restore print and io
     _G.print = originalPrint
+    _G.io = originalIo
   end)
 
   describe("getValue", function()
