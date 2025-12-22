@@ -1,7 +1,7 @@
 # Makefile for lua-game-pilot
 # Solar2D Game Template Development Commands
 
-.PHONY: help install test test-verbose test-coverage test-watch docs docs-open lint format clean clean-all
+.PHONY: help install install-hooks uninstall-hooks test test-verbose test-coverage test-watch docs docs-open lint format clean clean-all
 
 # Default target - show help
 help:
@@ -11,6 +11,8 @@ help:
 	@echo "Setup:"
 	@echo "  make install          Install all dependencies via LuaRocks"
 	@echo "  make install-dev      Install development dependencies only"
+	@echo "  make install-hooks    Install pre-commit hooks"
+	@echo "  make uninstall-hooks  Remove pre-commit hooks"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test             Run all tests"
@@ -45,7 +47,29 @@ install-dev:
 	luarocks install busted
 	luarocks install luacov
 	luarocks install ldoc
+	luarocks install luacheck
 	@echo "✓ Development dependencies installed"
+
+install-hooks:
+	@echo "Installing git hooks..."
+	@if [ -d .git ]; then \
+		cp hooks/pre-commit .git/hooks/pre-commit; \
+		chmod +x .git/hooks/pre-commit; \
+		echo "✓ Pre-commit hook installed"; \
+		echo ""; \
+		echo "To skip hooks temporarily:"; \
+		echo "  SKIP_HOOK=1 git commit"; \
+		echo "  SKIP_LINT=1 git commit  # Skip only linting"; \
+		echo "  SKIP_TESTS=1 git commit # Skip only tests"; \
+	else \
+		echo "Error: Not a git repository"; \
+		exit 1; \
+	fi
+
+uninstall-hooks:
+	@echo "Removing git hooks..."
+	@rm -f .git/hooks/pre-commit
+	@echo "✓ Pre-commit hook removed"
 
 # ============================================================================
 # Testing Commands
@@ -165,7 +189,7 @@ clean-all: clean
 # Development Workflow Commands
 # ============================================================================
 
-dev-setup: install-dev
+dev-setup: install-dev install-hooks
 	@echo "Development environment setup complete!"
 	@echo ""
 	@echo "Quick start:"

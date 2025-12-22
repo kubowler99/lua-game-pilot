@@ -500,6 +500,69 @@ If your editor doesn't support EditorConfig, follow these rules:
 - Remove trailing whitespace
 - Keep lines under 120 characters
 
+### Pre-commit Hooks
+
+This project includes **pre-commit hooks** to automatically check code quality before commits.
+
+#### Installing Hooks
+
+```bash
+# Install hooks (included in dev-setup)
+make install-hooks
+
+# Or as part of full dev setup
+make dev-setup
+```
+
+#### What the Hook Checks
+
+The pre-commit hook runs three checks on staged Lua files:
+
+1. **Luacheck** - Static code analysis
+   - Catches syntax errors and common mistakes
+   - Enforces code style rules
+
+2. **Debug Statements** - Warns about debug code
+   - Checks for `print()`, `console.log`, etc.
+   - Warns about `TODO:`, `FIXME:`, `XXX:` comments
+   - Warning only (doesn't block commit)
+
+3. **Tests** - Runs test suite
+   - Ensures all tests pass before commit
+   - Runs quickly without coverage
+
+#### Skipping Hooks
+
+You can skip hooks when needed:
+
+```bash
+# Skip all pre-commit checks
+SKIP_HOOK=1 git commit -m "message"
+
+# Skip only linting (run tests)
+SKIP_LINT=1 git commit -m "message"
+
+# Skip only tests (run linting)
+SKIP_TESTS=1 git commit -m "message"
+
+# Or use git's built-in flag (skips all hooks)
+git commit --no-verify -m "message"
+```
+
+#### Uninstalling Hooks
+
+```bash
+# Remove pre-commit hook
+make uninstall-hooks
+```
+
+#### Best Practices
+
+- **Don't skip hooks regularly** - They catch issues early
+- **Fix issues instead of skipping** - Keeps codebase healthy
+- **Use `SKIP_TESTS=1` for WIP commits** - When tests aren't ready yet
+- **Use `--no-verify` sparingly** - Only for emergencies
+
 ---
 
 ## Documentation

@@ -229,32 +229,56 @@ luacheck Libs Plugins Assets main.lua config.lua
 
 ---
 
-## Pending Improvements 📋
+### 7. Pre-commit Hooks ✅
+**Status:** Complete
+**Date Completed:** 2025-12-22
 
-### 7. Pre-commit Hooks
-**Status:** Not Started
-**Priority:** Medium
-**Estimated Effort:** 1-2 hours
+**What was added:**
+- `hooks/pre-commit` - Bash script for pre-commit checks
+  - **Check 1**: Runs luacheck on staged Lua files
+  - **Check 2**: Warns about debug statements (`print()`, `TODO:`, `FIXME:`)
+  - **Check 3**: Runs test suite (fast mode without coverage)
+  - Color-coded output for better readability
+  - Only runs on staged Lua files (not all files)
+- Makefile targets:
+  - `make install-hooks` - Install pre-commit hook
+  - `make uninstall-hooks` - Remove pre-commit hook
+  - `make dev-setup` - Now includes hook installation
+- Environment variable controls:
+  - `SKIP_HOOK=1` - Skip all checks
+  - `SKIP_LINT=1` - Skip only luacheck
+  - `SKIP_TESTS=1` - Skip only tests
+- Graceful degradation if tools not installed
 
-**Description:**
-Set up automated pre-commit hooks to run before each commit:
-- Run `luacheck` on staged Lua files
-- Run `busted` tests
-- Validate rockspec
-- Check for debug statements
+**Files Modified:**
+- Created: `hooks/pre-commit`
+- Modified: `Makefile` (added install-hooks, uninstall-hooks targets)
+- Modified: `README.md` (added Pre-commit Hooks section)
 
-**Planned Changes:**
-- Create `.git/hooks/pre-commit` script
-- Add hook installation to `make dev-setup`
-- Make hooks configurable (opt-in/opt-out)
-- Update README with hook documentation
+**Usage:**
+```bash
+# Install hooks
+make install-hooks
+
+# Normal commit (runs all checks)
+git commit -m "message"
+
+# Skip hooks when needed
+SKIP_HOOK=1 git commit -m "message"
+SKIP_TESTS=1 git commit -m "WIP"
+```
 
 **Benefits:**
-- Prevent committing broken code
-- Enforce code quality standards
-- Catch issues early in development
+- ✅ Prevents committing broken code
+- ✅ Automatic quality enforcement
+- ✅ Catches issues before they reach repository
+- ✅ Fast feedback loop
+- ✅ Configurable and skippable
+- ✅ Only checks staged files (efficient)
 
 ---
+
+## Pending Improvements 📋
 
 ### 8. CI/CD Configuration (.github/workflows)
 **Status:** Not Started
@@ -405,7 +429,8 @@ Increase test coverage across the codebase:
 - ✅ Test Framework: Configured with coverage
 - ✅ Development Scripts: Configured
 - ✅ Linting: Configured
-- ⚠️ Pre-commit Hooks: Not configured
+- ✅ Code Formatting: Configured
+- ✅ Pre-commit Hooks: Configured
 - ⚠️ CI/CD: Not configured
 
 ---
@@ -415,10 +440,9 @@ Increase test coverage across the codebase:
 ### Priority Order for Remaining Work
 1. **Additional Unit Tests** (#12) - Ongoing improvement
 2. **CI/CD Configuration** (#8) - Important for team collaboration
-3. **Pre-commit Hooks** (#7) - Enforce quality standards
-4. **Config Centralization** (#10) - Reduce tech debt
-5. **Hot Reload Support** (#9) - Nice-to-have for development
-6. **Docker Environment** (#11) - Optional, for larger teams
+3. **Config Centralization** (#10) - Reduce tech debt
+4. **Hot Reload Support** (#9) - Nice-to-have for development
+5. **Docker Environment** (#11) - Optional, for larger teams
 
 ### Commands Reference
 ```bash
@@ -460,12 +484,13 @@ When adding new improvements:
 
 ### 2025-12-22
 - Initial improvements tracking document created
-- Completed improvements #1-6 documented
+- Completed improvements #1-7 documented
   - #1: LuaRocks/Package Management
   - #2: Code Documentation (LuaLS/LDoc)
   - #3: Enhanced Test Setup
   - #4: Development Scripts/Makefile
   - #5: Linting Configuration
   - #6: EditorConfig File
-- Pending improvements #7-12 outlined
+  - #7: Pre-commit Hooks
+- Pending improvements #8-12 outlined
 - Priority recommendations updated
