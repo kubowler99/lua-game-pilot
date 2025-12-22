@@ -43,16 +43,22 @@ help:
 
 install:
 	@echo "Installing all dependencies..."
-	luarocks install --only-deps lua-game-pilot-dev-1.rockspec
+	luarocks install --only-deps --local lua-game-pilot-dev-1.rockspec
 	@echo "✓ Dependencies installed successfully"
+	@echo ""
+	@echo "Note: Packages installed locally to ~/.luarocks"
+	@echo "Make sure your PATH includes: $(HOME)/.luarocks/bin"
 
 install-dev:
 	@echo "Installing development dependencies..."
-	luarocks install busted
-	luarocks install luacov
-	luarocks install ldoc
-	luarocks install luacheck
+	luarocks install --local busted
+	luarocks install --local luacov
+	luarocks install --local ldoc
+	luarocks install --local luacheck
 	@echo "✓ Development dependencies installed"
+	@echo ""
+	@echo "Note: Packages installed locally to ~/.luarocks"
+	@echo "Make sure your PATH includes: $(HOME)/.luarocks/bin"
 
 install-hooks:
 	@echo "Installing git hooks..."
