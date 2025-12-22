@@ -1,5 +1,8 @@
 # Solar2D-template
 
+[![Tests](https://github.com/kubowler99/lua-game-pilot/actions/workflows/test.yml/badge.svg)](https://github.com/kubowler99/lua-game-pilot/actions/workflows/test.yml)
+[![Lint](https://github.com/kubowler99/lua-game-pilot/actions/workflows/lint.yml/badge.svg)](https://github.com/kubowler99/lua-game-pilot/actions/workflows/lint.yml)
+
 This is a very useful and versatile template for Solar2D games
 
 ## Project Overview
@@ -562,6 +565,66 @@ make uninstall-hooks
 - **Fix issues instead of skipping** - Keeps codebase healthy
 - **Use `SKIP_TESTS=1` for WIP commits** - When tests aren't ready yet
 - **Use `--no-verify` sparingly** - Only for emergencies
+
+---
+
+## CI/CD
+
+This project includes **GitHub Actions workflows** for automated testing and code quality checks.
+
+### Workflows
+
+#### Tests Workflow (`.github/workflows/test.yml`)
+
+Runs automatically on every push and pull request to `develop`, `main`, and `master` branches.
+
+**What it does:**
+- Sets up Lua 5.1 and LuaRocks environment
+- Installs all dependencies
+- Runs the complete test suite with coverage
+- Generates coverage reports
+- Checks coverage thresholds (40% minimum, 80% target)
+- Uploads coverage artifacts
+
+#### Lint Workflow (`.github/workflows/lint.yml`)
+
+Runs code quality checks on every push and pull request.
+
+**What it does:**
+- Runs luacheck on all source files
+- Validates the rockspec file
+- Checks for debug statements (`print()`, `TODO:`, `FIXME:`)
+- Reports warnings and notices in GitHub UI
+
+### Running CI Checks Locally
+
+You can run the same checks that CI runs:
+
+```bash
+# Run all CI checks (validate, lint, test with coverage)
+make ci
+
+# Or run individually
+make validate        # Check rockspec
+make lint           # Run luacheck
+make test-coverage  # Run tests with coverage
+```
+
+### Status Badges
+
+The status badges at the top of this README show the current state of:
+- **Tests** - Whether all tests are passing
+- **Lint** - Whether code quality checks are passing
+
+Click on a badge to see the detailed workflow run on GitHub Actions.
+
+### Benefits
+
+- ✅ **Automated testing** on every commit
+- ✅ **Prevent merging broken code** with status checks
+- ✅ **Coverage tracking** with automated reports
+- ✅ **Fast feedback** on code quality issues
+- ✅ **Consistent environment** across all developers
 
 ---
 

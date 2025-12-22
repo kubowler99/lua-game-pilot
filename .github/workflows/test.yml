@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  push:
+    branches: [ develop, main, master ]
+  pull_request:
+    branches: [ develop, main, master ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Lua
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: "5.1"
+
+    - name: Setup LuaRocks
+      uses: leafo/gh-actions-luarocks@v4
+
+    - name: Cache LuaRocks modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.luarocks
+          lua_modules
+        key: ${{ runner.os }}-luarocks-${{ hashFiles('lua-game-pilot-dev-1.rockspec') }}
+        restore-keys: |
+          ${{ runner.os }}-luarocks-
+
+    - name: Install dependencies
+      run: |
+        luarocks install --only-deps lua-game-pilot-dev-1.rockspec
+
+    - name: Run tests
+      run: |
+        busted --verbose --coverage
+
+    - name: Generate coverage report
+      run: |
+        luacov
+        cat luacov.report.out
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: |
+          luacov.report.out
+          luacov.stats.out
+
+    - name: Check coverage threshold
+      run: |
+        # Extract coverage percentage
+        COVERAGE=$(grep -oP 'Total\s+\d+\s+\d+\s+\K[\d.]+' luacov.report.out || echo "0")
+        echo "Coverage: ${COVERAGE}%"
+
+        # Check if coverage meets minimum threshold (40%)
+        if [ "$(echo "$COVERAGE < 40" | bc)" -eq 1 ]; then
+          echo "::warning::Coverage ${COVERAGE}% is below minimum threshold of 40%"
+        fi
+
+        # Aspirational target check (80%)
+        if [ "$(echo "$COVERAGE < 80" | bc)" -eq 1 ]; then
+          echo "::notice::Coverage ${COVERAGE}% is below target of 80%"
+        fi

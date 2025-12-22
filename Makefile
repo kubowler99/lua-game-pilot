@@ -27,6 +27,10 @@ help:
 	@echo "Code Quality:"
 	@echo "  make lint             Run Lua linter (luacheck) if installed"
 	@echo "  make format           Format Lua code (stylua) if installed"
+	@echo "  make validate         Validate rockspec file"
+	@echo ""
+	@echo "CI/CD:"
+	@echo "  make ci               Run all CI checks (validate, lint, test)"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean            Remove generated files (coverage, docs)"
@@ -204,8 +208,15 @@ dev-check: lint test-coverage
 # CI/CD Commands
 # ============================================================================
 
-ci: install test-coverage lint validate
+ci: validate lint test-coverage
 	@echo "✓ CI checks passed"
+	@echo ""
+	@echo "This command runs:"
+	@echo "  1. validate - Check rockspec"
+	@echo "  2. lint     - Run luacheck"
+	@echo "  3. test     - Run tests with coverage"
+	@echo ""
+	@echo "Use this before pushing or in CI/CD pipelines"
 
 # Show dependency tree
 deps:
