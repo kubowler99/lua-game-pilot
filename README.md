@@ -235,6 +235,39 @@ Base class for all game objects with:
 
 This is a production-ready template suitable for 2D games requiring state management, entity systems, and cross-platform mobile deployment.
 
+### Prerequisites
+- [Solar2D](https://solar2d.com/) - Game engine
+- [Lua](https://www.lua.org/) 5.1 or higher
+- [LuaRocks](https://luarocks.org/) - Lua package manager (optional but recommended)
+- [Busted](https://olivinelabs.com/busted/) - Testing framework (for development)
+
+### Installation
+
+#### Using LuaRocks (Recommended)
+
+Install project dependencies using LuaRocks:
+
+```bash
+# Install all dependencies
+luarocks install --only-deps lua-game-pilot-dev-1.rockspec
+
+# Or install individually
+luarocks install penlight
+luarocks install busted
+luarocks install middleclass
+```
+
+#### Manual Installation
+
+If not using LuaRocks, the project includes vendored dependencies:
+- **Penlight** - Already included in `pl/` directory
+- **MiddleClass** - Already included in `Libs/middleclass.lua`
+
+For testing, you'll need to install Busted manually:
+```bash
+luarocks install busted
+```
+
 ### Configuration
 1. Edit `Debug/settings.lua` to configure debug options
 2. Modify `build.settings` for platform-specific settings
@@ -245,3 +278,89 @@ This is a production-ready template suitable for 2D games requiring state manage
 2. Add scenes in `Assets/Scenes/`
 3. Define stories/chapters in `Assets/Story/`
 4. Register object pools in `Assets/Story/ObjectPool/`
+
+---
+
+## Testing
+
+This project uses **[Busted](https://olivinelabs.com/busted/)** for unit testing.
+
+### Running Tests
+
+```bash
+# Run all tests
+busted
+
+# Run specific test file
+busted spec/libs/utils_spec.lua
+
+# Run with verbose output
+busted --verbose
+
+# Run tests with coverage (requires luacov)
+busted --coverage
+```
+
+### Test Configuration
+
+Test configuration is defined in `.busted`:
+- **Lua Paths**: Automatically includes `Libs/`, `Plugins/`, `Assets/`, and `pl/` directories
+- **Helper File**: `spec/spec_helper.lua` loads common test utilities
+- **Pattern**: Test files must end with `_spec.lua`
+- **Output**: UTF-8 terminal output for readable test results
+
+### Writing Tests
+
+Tests are located in the `spec/` directory, mirroring the project structure:
+
+```
+spec/
+├── libs/          # Tests for core libraries
+│   └── utils_spec.lua
+├── plugins/       # Tests for plugins
+│   └── loadSave_spec.lua
+└── spec_helper.lua
+```
+
+Example test structure:
+
+```lua
+describe("MyModule", function()
+  local MyModule
+
+  before_each(function()
+    MyModule = require("Libs.myModule")
+  end)
+
+  describe("myFunction", function()
+    it("should return expected value", function()
+      assert.equals(42, MyModule.myFunction())
+    end)
+  end)
+end)
+```
+
+### Current Test Coverage
+
+- ✅ `Libs/utils.lua` - Math extensions, string utilities, table operations
+- ✅ `Plugins/loadSave.lua` - Save/load system functionality
+- ⚠️ Additional test coverage needed for entities and game systems
+
+### Adding New Tests
+
+1. Create a new test file in `spec/` matching the module path:
+   ```bash
+   # For Libs/myModule.lua, create:
+   spec/libs/myModule_spec.lua
+   ```
+
+2. Follow the naming convention: `<module_name>_spec.lua`
+
+3. Use Busted's BDD-style syntax (`describe`, `it`, `before_each`, etc.)
+
+4. Run tests to verify:
+   ```bash
+   busted spec/libs/myModule_spec.lua
+   ```
+
+---

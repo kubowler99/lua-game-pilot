@@ -10,7 +10,8 @@ luac.out
 
 # LuaRocks
 luarocks.lock
-*.rockspec
+lua_modules/
+.luarocks/
 
 # Solar2D / Corona SDK
 *.build
