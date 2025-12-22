@@ -23,36 +23,13 @@ jobs:
     - name: Setup LuaRocks
       uses: leafo/gh-actions-luarocks@v4
 
-    - name: Cache LuaRocks modules
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.luarocks
-          lua_modules
-        key: ${{ runner.os }}-luarocks-lint-${{ hashFiles('lua-game-pilot-dev-1.rockspec') }}
-        restore-keys: |
-          ${{ runner.os }}-luarocks-lint-
-
-    - name: Setup LuaRocks paths
-      run: |
-        eval $(luarocks path)
-        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
-        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
-
     - name: Install luacheck
       run: |
-        luarocks install --tree lua_modules luacheck
-
-    - name: Setup module paths
-      run: |
-        eval $(luarocks path --tree lua_modules)
-        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
-        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
-        echo "$HOME/.luarocks/bin:$(pwd)/lua_modules/bin" >> $GITHUB_PATH
+        luarocks install luacheck
 
     - name: Run luacheck
       run: |
-        ./lua_modules/bin/luacheck Libs Plugins Assets main.lua config.lua
+        luacheck Libs Plugins Assets main.lua config.lua
 
     - name: Validate rockspec
       run: |

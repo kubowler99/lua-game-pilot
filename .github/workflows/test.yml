@@ -23,40 +23,17 @@ jobs:
     - name: Setup LuaRocks
       uses: leafo/gh-actions-luarocks@v4
 
-    - name: Cache LuaRocks modules
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.luarocks
-          lua_modules
-        key: ${{ runner.os }}-luarocks-${{ hashFiles('lua-game-pilot-dev-1.rockspec') }}
-        restore-keys: |
-          ${{ runner.os }}-luarocks-
-
-    - name: Setup LuaRocks paths
-      run: |
-        eval $(luarocks path)
-        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
-        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
-
     - name: Install dependencies
       run: |
-        luarocks install --tree lua_modules --only-deps lua-game-pilot-dev-1.rockspec
-
-    - name: Setup module paths for tests
-      run: |
-        eval $(luarocks path --tree lua_modules)
-        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
-        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
-        echo "$(pwd)/lua_modules/bin" >> $GITHUB_PATH
+        luarocks install --only-deps lua-game-pilot-dev-1.rockspec
 
     - name: Run tests
       run: |
-        ./lua_modules/bin/busted --verbose --coverage
+        busted --verbose --coverage
 
     - name: Generate coverage report
       run: |
-        ./lua_modules/bin/luacov
+        luacov
         cat luacov.report.out
 
     - name: Upload coverage report
