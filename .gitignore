@@ -13,6 +13,10 @@ luarocks.lock
 lua_modules/
 .luarocks/
 
+# Documentation
+docs/
+*.html
+
 # Solar2D / Corona SDK
 *.build
 *.apk

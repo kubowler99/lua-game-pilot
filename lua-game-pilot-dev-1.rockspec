@@ -26,7 +26,8 @@ dependencies = {
    "lua >= 5.1",
    "penlight >= 1.13.0",  -- Comprehensive Lua utilities (pl/ directory)
    "busted >= 2.0.0",     -- Testing framework
-   "middleclass >= 4.1.0" -- OOP class system
+   "middleclass >= 4.1.0", -- OOP class system
+   "ldoc >= 1.4.6"        -- Documentation generator
 }
 
 build = {
