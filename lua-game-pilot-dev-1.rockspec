@@ -29,7 +29,8 @@ dependencies = {
    "middleclass >= 4.1.0", -- OOP class system
    "ldoc >= 1.4.6",       -- Documentation generator
    "luacov >= 0.15.0",    -- Coverage analysis tool
-   "luacheck >= 0.23.0"   -- Static code analyzer
+   "luacheck >= 0.23.0",  -- Static code analyzer
+   "lunajson >= 1.2.0"    -- JSON parser for tests (Solar2D has built-in json)
 }
 
 build = {
