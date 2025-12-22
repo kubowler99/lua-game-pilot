@@ -1,0 +1,130 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime": {
+    "version": "Lua 5.1",
+    "path": [
+      "?.lua",
+      "?/init.lua",
+      "Libs/?.lua",
+      "Libs/?/init.lua",
+      "Plugins/?.lua",
+      "Plugins/?/init.lua",
+      "Assets/?.lua",
+      "Assets/?/init.lua",
+      "pl/?.lua",
+      "pl/?/init.lua"
+    ]
+  },
+  "workspace": {
+    "library": [
+      "Libs",
+      "Plugins",
+      "Assets",
+      "pl"
+    ],
+    "ignoreDir": [
+      ".git",
+      ".idea",
+      "build",
+      "Builds",
+      "lua_modules",
+      ".luarocks"
+    ],
+    "checkThirdParty": false
+  },
+  "diagnostics": {
+    "globals": [
+      "_G",
+      "display",
+      "timer",
+      "transition",
+      "system",
+      "audio",
+      "composer",
+      "native",
+      "io",
+      "os",
+      "math",
+      "string",
+      "table",
+      "package",
+      "require",
+      "Class",
+      "List",
+      "screen",
+      "Stateful",
+      "device",
+      "textFormat",
+      "equals",
+      "shuffle",
+      "getDepth",
+      "game",
+      "savedData",
+      "DEBUG",
+      "transition2",
+      "ObjectPool"
+    ],
+    "disable": [
+      "lowercase-global",
+      "undefined-field"
+    ],
+    "groupFileStatus": {
+      "ambiguity": "Opened",
+      "await": "Opened",
+      "codestyle": "None",
+      "duplicate": "Opened",
+      "global": "Opened",
+      "luadoc": "Opened",
+      "redefined": "Opened",
+      "strict": "None",
+      "strong": "Opened",
+      "type-check": "Opened",
+      "unbalanced": "Opened",
+      "unused": "Opened"
+    }
+  },
+  "completion": {
+    "enable": true,
+    "callSnippet": "Both",
+    "keywordSnippet": "Both",
+    "displayContext": 6,
+    "workspaceWord": true,
+    "showWord": "Fallback"
+  },
+  "signatureHelp": {
+    "enable": true
+  },
+  "hover": {
+    "enable": true,
+    "viewString": true,
+    "viewStringMax": 1000,
+    "viewNumber": true,
+    "fieldInfer": 3000,
+    "previewFields": 50,
+    "enumsLimit": 5
+  },
+  "format": {
+    "enable": false
+  },
+  "semantic": {
+    "enable": true,
+    "variable": true,
+    "annotation": true,
+    "keyword": true
+  },
+  "type": {
+    "castNumberToInteger": true,
+    "weakUnionCheck": false
+  },
+  "hint": {
+    "enable": true,
+    "paramType": true,
+    "setType": true,
+    "paramName": "All",
+    "semicolon": "SameLine",
+    "arrayIndex": "Auto"
+  },
+  "telemetry": {
+    "enable": false
+  }
+}

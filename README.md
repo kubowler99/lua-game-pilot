@@ -281,6 +281,84 @@ luarocks install busted
 
 ---
 
+## Documentation
+
+This project uses **[LDoc](https://github.com/lunarmodules/LDoc)** for generating API documentation and **Lua Language Server** for IDE support.
+
+### Generating Documentation
+
+Install LDoc if not already installed:
+```bash
+luarocks install ldoc
+```
+
+Generate HTML documentation:
+```bash
+# Generate documentation
+ldoc .
+
+# Documentation will be created in docs/ directory
+# Open docs/index.html in your browser
+```
+
+### IDE Support (Lua Language Server)
+
+The project includes `.luarc.json` configuration for Lua Language Server, providing:
+- **Autocomplete** - Intelligent code completion for all modules
+- **Hover Documentation** - View function signatures and documentation on hover
+- **Diagnostics** - Real-time error detection and warnings
+- **Go to Definition** - Jump to function/variable definitions
+- **Type Checking** - Basic type inference and validation
+
+#### Setup for VS Code
+
+1. Install the [Lua Language Server extension](https://marketplace.visualstudio.com/items?itemName=sumneko.lua)
+2. The `.luarc.json` file will be automatically detected
+3. Enjoy enhanced Lua development experience!
+
+#### Setup for Other IDEs
+
+Most modern editors support Lua Language Server:
+- **IntelliJ/IDEA**: Install [EmmyLua plugin](https://plugins.jetbrains.com/plugin/9768-emmylua)
+- **Neovim**: Use [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+- **Sublime Text**: Install [LSP package](https://packagecontrol.io/packages/LSP)
+
+### Documentation Style
+
+The project uses LuaDoc-style annotations for all public APIs:
+
+```lua
+---Calculates the distance between two points
+---@param x1 number First point X coordinate
+---@param y1 number First point Y coordinate
+---@param x2 number Second point X coordinate
+---@param y2 number Second point Y coordinate
+---@return number distance The calculated distance
+function calculateDistance(x1, y1, x2, y2)
+  local dx = x2 - x1
+  local dy = y2 - y1
+  return math.sqrt(dx*dx + dy*dy)
+end
+```
+
+### Custom Documentation Tags
+
+The project supports Solar2D-specific tags in `config.ld`:
+- `@solar2d` - Marks Solar2D API usage
+- `@entity` - Identifies entity types
+- `@plugin` - Marks plugin modules
+- `@global` - Documents global variables
+- `@scene` - Identifies scene modules
+
+### Current Documentation Coverage
+
+- ✅ `Libs/utils.lua` - Fully documented with type annotations
+- ✅ `Plugins/loadSave.lua` - Complete API documentation
+- ✅ `Assets/Entities/entity.lua` - Entity class with all methods documented
+- ⚠️ Additional documentation needed for GUI entities and game systems
+
+---
+
 ## Testing
 
 This project uses **[Busted](https://olivinelabs.com/busted/)** for unit testing.
