@@ -52,7 +52,7 @@ jobs:
 
     - name: Run luacheck
       run: |
-        luacheck Libs Plugins Assets main.lua config.lua
+        ./lua_modules/bin/luacheck Libs Plugins Assets main.lua config.lua
 
     - name: Validate rockspec
       run: |

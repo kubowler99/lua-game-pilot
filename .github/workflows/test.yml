@@ -48,14 +48,15 @@ jobs:
         eval $(luarocks path --tree lua_modules)
         echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
         echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
+        echo "$(pwd)/lua_modules/bin" >> $GITHUB_PATH
 
     - name: Run tests
       run: |
-        busted --verbose --coverage
+        ./lua_modules/bin/busted --verbose --coverage
 
     - name: Generate coverage report
       run: |
-        luacov
+        ./lua_modules/bin/luacov
         cat luacov.report.out
 
     - name: Upload coverage report
