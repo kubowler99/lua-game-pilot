@@ -33,9 +33,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-luarocks-
 
+    - name: Setup LuaRocks paths
+      run: |
+        eval $(luarocks path)
+        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
+        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
-        luarocks install --only-deps lua-game-pilot-dev-1.rockspec
+        luarocks install --tree lua_modules --only-deps lua-game-pilot-dev-1.rockspec
+
+    - name: Setup module paths for tests
+      run: |
+        eval $(luarocks path --tree lua_modules)
+        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
+        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
 
     - name: Run tests
       run: |

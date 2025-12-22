@@ -33,9 +33,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-luarocks-lint-
 
+    - name: Setup LuaRocks paths
+      run: |
+        eval $(luarocks path)
+        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
+        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
+
     - name: Install luacheck
       run: |
-        luarocks install luacheck
+        luarocks install --tree lua_modules luacheck
+
+    - name: Setup module paths
+      run: |
+        eval $(luarocks path --tree lua_modules)
+        echo "LUA_PATH=$LUA_PATH" >> $GITHUB_ENV
+        echo "LUA_CPATH=$LUA_CPATH" >> $GITHUB_ENV
+        echo "$HOME/.luarocks/bin:$(pwd)/lua_modules/bin" >> $GITHUB_PATH
 
     - name: Run luacheck
       run: |
