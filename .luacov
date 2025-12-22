@@ -1,0 +1,76 @@
+-- LuaCov configuration file
+-- See: https://keplerproject.github.io/luacov/
+
+-- Output configuration
+statsfile = "luacov.stats.out"
+reportfile = "luacov.report.out"
+
+-- Files to include in coverage
+include = {
+  "^Libs/",
+  "^Plugins/",
+  "^Assets/",
+  "^main$",
+  "^config$"
+}
+
+-- Files to exclude from coverage
+exclude = {
+  -- Third-party libraries
+  "^pl/",
+  "^Libs/middleclass$",
+  "^Libs/stateful$",
+
+  -- Test files
+  "^spec/",
+  "spec_helper$",
+  "_spec$",
+
+  -- Debug files
+  "^Debug/debugInfo$",
+
+  -- Build and temp directories
+  "^build/",
+  "^Builds/",
+  "^lua_modules/",
+  "^%.luarocks/",
+}
+
+-- Modules to exclude (by name pattern)
+modules = {
+}
+
+-- Tick option: true = count every line execution
+-- false = only count if line was executed at least once
+tick = false
+
+-- Run reporter on completion
+runreport = true
+
+-- Delete stats file after report generation
+deletestats = false
+
+-- Cobertura XML output (useful for CI/CD)
+cobertura = false
+
+-- Report format configuration
+reporter = "default"
+
+-- HTML reporter configuration (if using luacov-html)
+html = {
+  -- Output directory for HTML reports
+  output = "coverage",
+  -- Title for HTML reports
+  title = "lua-game-pilot Coverage Report"
+}
+
+-- Summary configuration
+summary = {
+  -- Show summary at end of report
+  enable = true,
+  -- Minimum coverage percentage to highlight
+  threshold = 80
+}
+
+-- Custom patterns for better reporting
+savestepsize = 100

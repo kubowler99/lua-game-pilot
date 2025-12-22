@@ -17,6 +17,11 @@ lua_modules/
 docs/
 *.html
 
+# Test coverage
+luacov.*.out
+coverage/
+*.gcov
+
 # Solar2D / Corona SDK
 *.build
 *.apk

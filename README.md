@@ -375,9 +375,52 @@ busted spec/libs/utils_spec.lua
 # Run with verbose output
 busted --verbose
 
-# Run tests with coverage (requires luacov)
+# Run tests with coverage
 busted --coverage
+
+# Run with coverage profile (defined in .busted)
+busted -o utfTerminal --coverage
 ```
+
+### Test Coverage
+
+This project uses **[LuaCov](https://keplerproject.github.io/luacov/)** for code coverage analysis.
+
+#### Generating Coverage Reports
+
+```bash
+# Install luacov if not already installed
+luarocks install luacov
+
+# Run tests with coverage
+busted --coverage
+
+# View coverage report
+cat luacov.report.out
+
+# Or generate detailed coverage stats
+luacov
+
+# Clean up coverage files
+rm luacov.*.out
+```
+
+#### Coverage Configuration
+
+Coverage is configured in `.luacov`:
+- **Includes**: `Libs/`, `Plugins/`, `Assets/`, `main.lua`, `config.lua`
+- **Excludes**: Third-party libraries (`pl/`, `middleclass`), test files, debug files
+- **Threshold**: 80% coverage target
+- **Reports**: Generates `luacov.report.out` and `luacov.stats.out`
+
+#### Coverage Targets
+
+| Module Type | Current | Target |
+|-------------|---------|--------|
+| Core Libs   | ~60%    | 85%    |
+| Plugins     | ~70%    | 90%    |
+| Entities    | ~20%    | 75%    |
+| Game Systems| ~10%    | 70%    |
 
 ### Test Configuration
 
@@ -386,6 +429,8 @@ Test configuration is defined in `.busted`:
 - **Helper File**: `spec/spec_helper.lua` loads common test utilities
 - **Pattern**: Test files must end with `_spec.lua`
 - **Output**: UTF-8 terminal output for readable test results
+- **Coverage**: Enabled by default for all test runs
+- **Seed**: Fixed at 12345 for reproducible test ordering
 
 ### Writing Tests
 
@@ -397,6 +442,8 @@ spec/
 │   └── utils_spec.lua
 ├── plugins/       # Tests for plugins
 │   └── loadSave_spec.lua
+├── entities/      # Tests for entity classes
+├── assets/        # Tests for game assets and systems
 └── spec_helper.lua
 ```
 

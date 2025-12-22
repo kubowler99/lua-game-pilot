@@ -1,12 +1,21 @@
 return {
   _all = {
-    coverage = false,
+    coverage = true,
     lpath = "Libs/?.lua;Plugins/?.lua;Assets/?.lua;pl/?.lua",
     helper = "spec/spec_helper.lua",
+    ROOT = {"spec/"},
   },
   default = {
     verbose = true,
     output = "utfTerminal",
     pattern = "_spec",
+    shuffle = false,
+    seed = 12345,
+  },
+  coverage = {
+    verbose = true,
+    output = "utfTerminal",
+    pattern = "_spec",
+    coverage = true,
   }
 }
