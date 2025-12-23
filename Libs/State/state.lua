@@ -4,6 +4,7 @@
 ---Notifies observers when values change
 ---Supports sub-states for scoped access
 local Subject = require("Libs.State.subject")
+local pl       = require("pl")
 
 local type     = type
 local deepcopy = pl.tablex.deepcopy
@@ -47,18 +48,18 @@ function SH:setValue(path, value)
   local root      = self.root
   local changes   = {}
   -- print("------------- "..tostring(self.inGameObject).." -------------")
-  
+
   local newPath = tablePath[1]
   for i=1, #tablePath-1 do
     local key = tablePath[i]
     table[key] = table[key] or {}
-    
+
     changes[root..newPath] = table[key]
     table = table[key]
-    
+
     newPath = newPath.."."..tablePath[i+1]
   end
-  
+
 
   local changed = false
   local f; f = function(o, d, dk, p)
@@ -94,7 +95,7 @@ function SH:setValue(path, value)
       end
     end
   end
-  
+
   -- print("----------------------------------------\n\n")
 end
 
@@ -212,17 +213,6 @@ function SH:merge(data, secondWins)
         changes[p..k] = v
         f(t1[k], v, p..k..".")
       else
-        local f2; f2 = function(t, pathPrefix)
-          for k2,v2 in pairs(t) do
-            if type(v2) == 'table' then
-              f2(v2[k2], pathPrefix..k2..".")
-            else
-              changes[pathPrefix..k2] = v2
-            end
-          end
-          f2(v, pathPrefix)
-        end
-
         if t1[k] ~= v then
           t1[k] = v
           changes[p..k] = v
