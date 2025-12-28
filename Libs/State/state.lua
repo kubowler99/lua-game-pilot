@@ -47,18 +47,18 @@ function SH:setValue(path, value)
   local root      = self.root
   local changes   = {}
   -- print("------------- "..tostring(self.inGameObject).." -------------")
-  
+
   local newPath = tablePath[1]
   for i=1, #tablePath-1 do
     local key = tablePath[i]
     table[key] = table[key] or {}
-    
+
     changes[root..newPath] = table[key]
     table = table[key]
-    
+
     newPath = newPath.."."..tablePath[i+1]
   end
-  
+
 
   local changed = false
   local f; f = function(o, d, dk, p)
@@ -94,7 +94,7 @@ function SH:setValue(path, value)
       end
     end
   end
-  
+
   -- print("----------------------------------------\n\n")
 end
 
