@@ -1,10 +1,10 @@
 # Solar2D-template
 
-This is a very useful and versatile template for Solar2D games
+This is an invaluable and versatile template for Solar2D games
 
 ## Project Overview
 
-This is a well-structured **Solar2D (formerly Corona SDK)** game template with professional game development patterns, designed for landscape-oriented mobile games. The architecture demonstrates mature engineering practices with clear separation of concerns.
+This is a well-structured **Solar2D (formerly Corona SDK)** game template with professional game development patterns, designed for landscape-oriented mobile games. The architecture demonstrates mature engineering practices with a clear separation of concerns.
 
 ---
 
@@ -18,7 +18,7 @@ This is a well-structured **Solar2D (formerly Corona SDK)** game template with p
 **main.lua** - Bootstrap sequence:
 1. Load utilities and debug configuration
 2. 50ms initialization delay
-3. Initialize save/load system
+3. Initialize the save/load system
 4. Optional data wiping (debug modes)
 5. Start game via `_G.game.start()`
 
@@ -27,21 +27,21 @@ This is a well-structured **Solar2D (formerly Corona SDK)** game template with p
 ## System Architecture Layers
 
 ### 1. Core Libraries (`Libs/`)
-- **middleclass.lua** - OOP class system (MiddleClass library)
-- **stateful.lua** - State machine implementation
-- **utils.lua** - Extended math utilities, text formatting, table operations
+- **middleclass.lua** – OOP class system (MiddleClass library)
+- **stateful.lua** – State machine implementation
+- **utils.lua** – Extended math utilities, text formatting, table operations
   - Custom math: `decimalRandom`, `bidirRandom`, `hypotenuse`, `getAngle`
   - String extensions: `capitalize()`, `split()`
   - Table operations: binary insertion, shuffling
 - **screen.lua** - Screen dimension management
 - **device.lua** - Device detection
-- **objectPoolManager.lua** - Object pooling for performance optimization
+- **objectPoolManager.lua** – Object pooling for performance optimization
 - **taskQueue.lua** - Async task management
-- **transition2.lua** - Enhanced transition system
+- **transition2.lua** – Enhanced transition system
 - **State/** - Observer pattern implementation (subject.lua, state.lua)
 
 ### 2. Third-Party Library
-- **pl/** (Penlight) - Comprehensive Lua utilities library
+- **pl/** (Penlight) – Comprehensive Lua utilities library
   - Data structures: List, Map, Set, OrderedMap, MultiMap
   - File operations, path handling, XML/URL parsing
   - Date handling, comprehensions, templates
@@ -65,9 +65,9 @@ This is a well-structured **Solar2D (formerly Corona SDK)** game template with p
 
 **soundPlayer.lua** - Audio management
 
-**loadingScreen.lua** - Loading screen transitions
+**loadingScreen.lua** – Loading screen transitions
 
-**objectPool.lua** - Base object pool implementation
+**objectPool.lua** – Base object pool implementation
 
 ### 4. Debug System (`Debug/`)
 
@@ -79,7 +79,7 @@ This is a well-structured **Solar2D (formerly Corona SDK)** game template with p
 - Data wiping options
 - Audio muting
 
-**main.lua** - Debug runtime features:
+**main.lua** – Debug runtime features:
 - Composer debug mode
 - Game view scaling
 - Slow-motion mode (0.1x speed after 17s)
@@ -95,7 +95,7 @@ This is a well-structured **Solar2D (formerly Corona SDK)** game template with p
 Central game controller with:
 
 **Lifecycle Management:**
-- `start()` - Initialize time system, state, audio, display
+- `start()` - Initialize the time system, state, audio, display
 - `play(story)` - Load story chapters
 - `goTo(scene)` - Scene transitions via Composer
 - `save()` - Persist game state
@@ -108,7 +108,7 @@ Central game controller with:
 **Features:**
 - Shortcuts system for scene object references
 - Loading screen integration
-- State persistence via save system
+- State persistence via the save system
 - Story-based progression system
 
 ### Entity System (`Assets/Entities/entity.lua`)
@@ -150,29 +150,29 @@ Base class for all game objects with:
 ### Scene System
 
 **Composer Integration:**
-- **mainGame.lua** - Main game scene
+- **mainGame.lua** – Main game scene
   - Creates environment from `Environments/mainGame`
   - Standard Composer lifecycle (create/show/hide/destroy)
   - Shortcuts integration
 
 **Story System:**
-- **mainStory.lua** - Story progression controller
+- **mainStory.lua** – Story progression controller
   - Extends `ChapterBasics`
   - Loads object pools
-  - Transitions to main game scene
+  - Transitions to the main game scene
 - Chapter-based game flow
 
 ---
 
 ## Key Design Patterns
 
-1. **Global Registry** - Extensive use of `_G` for cross-module access (`_G.game`, `_G.DEBUG`, `_G.savedData`)
+1. **Global Registry** – Extensive use of `_G` for cross-module access (`_G.game`, `_G.DEBUG`, `_G.savedData`)
 2. **Object Pooling** - Pre-instantiated objects for performance
-3. **Observer Pattern** - State management and time subscribers
+3. **Observer Pattern** – State management and time subscribers
 4. **Entity-Component** - Base Entity class with composition via groups
-5. **Scene Graph** - Solar2D's display groups for hierarchical rendering
-6. **Singleton Services** - Time, SaveData, Game as global singletons
-7. **Factory Pattern** - ObjectPoolManager with lazy factory loading
+5. **Scene Graph** – Solar2D's display groups for hierarchical rendering
+6. **Singleton Services** – Time, SaveData, Game as global singletons
+7. **Factory Pattern** – ObjectPoolManager with lazy factory loading
 
 ---
 
@@ -236,9 +236,9 @@ Base class for all game objects with:
 This is a production-ready template suitable for 2D games requiring state management, entity systems, and cross-platform mobile deployment.
 
 ### Prerequisites
-- [Solar2D](https://solar2d.com/) - Game engine
+- [Solar2D](https://solar2d.com/) – Game engine
 - [Lua](https://www.lua.org/) 5.1 or higher
-- [LuaRocks](https://luarocks.org/) - Lua package manager (optional but recommended)
+- [LuaRocks](https://luarocks.org/) – Lua package manager (optional but recommended)
 - [Busted](https://olivinelabs.com/busted/) - Testing framework (for development)
 
 ### Installation
@@ -280,8 +280,8 @@ luarocks install luacov
 #### Manual Installation
 
 If not using LuaRocks, the project includes vendored dependencies:
-- **Penlight** - Already included in `pl/` directory
-- **MiddleClass** - Already included in `Libs/middleclass.lua`
+- **Penlight** – Already included in `pl/` directory
+- **MiddleClass** – Already included in `Libs/middleclass.lua`
 
 For testing, you'll need to install Busted manually:
 ```bash
@@ -496,7 +496,7 @@ EditorConfig is supported by most modern editors:
 If your editor doesn't support EditorConfig, follow these rules:
 - Use 2 spaces for indentation (no tabs)
 - Use LF line endings (not CRLF)
-- Add newline at end of file
+- Add a newline at the end of the file
 - Remove trailing whitespace
 - Keep lines under 120 characters
 
@@ -527,7 +527,7 @@ The pre-commit hook runs three checks on staged Lua files:
    - Warns about `TODO:`, `FIXME:`, `XXX:` comments
    - Warning only (doesn't block commit)
 
-3. **Tests** - Runs test suite
+3. **Tests** – Runs test suite
    - Ensures all tests pass before commit
    - Runs quickly without coverage
 
@@ -558,7 +558,7 @@ make uninstall-hooks
 
 #### Best Practices
 
-- **Don't skip hooks regularly** - They catch issues early
+- **Don't skip hooks regularly** – They catch issues early
 - **Fix issues instead of skipping** - Keeps codebase healthy
 - **Use `SKIP_TESTS=1` for WIP commits** - When tests aren't ready yet
 - **Use `--no-verify` sparingly** - Only for emergencies
@@ -596,10 +596,10 @@ ldoc .
 
 The project includes `.luarc.json` configuration for Lua Language Server, providing:
 - **Autocomplete** - Intelligent code completion for all modules
-- **Hover Documentation** - View function signatures and documentation on hover
+- **Hover Documentation** – View function signatures and documentation on hover
 - **Diagnostics** - Real-time error detection and warnings
-- **Go to Definition** - Jump to function/variable definitions
-- **Type Checking** - Basic type inference and validation
+- **Go to Definition** – Jump to function/variable definitions
+- **Type Checking** – Basic type inference and validation
 
 #### Setup for VS Code
 
@@ -722,12 +722,12 @@ Coverage is configured in `.luacov`:
 
 #### Coverage Targets
 
-| Module Type | Current | Target |
-|-------------|---------|--------|
-| Core Libs   | ~60%    | 85%    |
-| Plugins     | ~70%    | 90%    |
-| Entities    | ~20%    | 75%    |
-| Game Systems| ~10%    | 70%    |
+| Module Type  | Current | Target |
+|--------------|---------|--------|
+| Core Libs    | ~60%    | 85%    |
+| Plugins      | ~70%    | 90%    |
+| Entities     | ~20%    | 75%    |
+| Game Systems | ~10%    | 70%    |
 
 ### Test Configuration
 
