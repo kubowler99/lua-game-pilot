@@ -92,7 +92,9 @@ end
 ---@param params? table Audio playback parameters (channel, loops, etc.)
 ---@return number? channel Audio channel if played, nil if muted/debounced
 function SoundPlayer.playSound(sound, params)
-  if _G.DEBUG.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted or not SoundPlayer.canPlay(sound) then return end
+  if Config.Debug.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted or not SoundPlayer.canPlay(sound) then
+    return
+  end
 
   if not soundTable[sound] and device.isAndroid and not device.isSimulator then
     if not eventSoundTable[sound] then
@@ -127,7 +129,9 @@ end
 ---@param sound string Sound name (without extension)
 ---@return number? channel Audio channel if played, nil if muted
 function SoundPlayer.longSound(sound)
-  if _G.DEBUG.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted or not SoundPlayer.canPlay(sound) then return end
+  if Config.Debug.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted or not SoundPlayer.canPlay(sound) then
+    return
+  end
 
 	if not soundTable[sound] then
 		SoundPlayer.loadSound(sound,true)
@@ -144,7 +148,7 @@ end
 ---@param channel? number Audio channel (defaults to 1)
 ---@return number channel The audio channel used (always returns 1 for stinger mode)
 function SoundPlayer.playMusic(sound, stinger, once, onComplete, channel)
-  if SoundPlayer.muted or _G.DEBUG.MUTE_MUSIC then return end
+  if SoundPlayer.muted or Config.Debug.MUTE_MUSIC then return end
 
   channel = channel or 1
 
@@ -154,7 +158,7 @@ function SoundPlayer.playMusic(sound, stinger, once, onComplete, channel)
     end
   end
   if stinger then
-    if _G.DEBUG.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted then
+    if Config.Debug.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted then
       audio.play(soundTable[stinger])
     end
 

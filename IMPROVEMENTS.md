@@ -278,6 +278,66 @@ SKIP_TESTS=1 git commit -m "WIP"
 
 ---
 
+### 10. Constants/Config Centralization ✅
+**Status:** Complete
+**Date Completed:** 2025-12-28
+
+**What was added:**
+- `Libs/config.lua` - Centralized configuration module
+  - `Config.Debug.*` - Debug and development settings (migrated from `_G.DEBUG`)
+  - `Config.Display.*` - Display and rendering settings (from `config.lua`)
+  - `Config.Game.*` - Game-specific settings (stories, scene paths, etc.)
+  - `Config.Paths.*` - File and module path constants
+  - Full type annotations with LuaLS `@class` and `@type` tags
+- Backward compatibility maintained with `_G.DEBUG` global
+- All code updated to use `Config.*` namespaces:
+  - `Debug/main.lua` - Loads and merges settings into Config
+  - `main.lua` - Uses `Config.Debug.*`
+  - `Assets/game.lua` - Uses `Config.Game.*` and `Config.Display.*`
+  - `Plugins/soundPlayer.lua` - Uses `Config.Debug.MUTE_*`
+  - `Plugins/objectPool.lua` - Uses `Config.Debug.OBJECT_POOL*`
+  - `Assets/Entities/entity.lua` - Uses `Config.Debug.ENTITY_GROUPS`
+- Updated `.luacheckrc` to recognize `Config` global
+
+**Files Modified:**
+- Created: `Libs/config.lua`
+- Modified: `Debug/main.lua`
+- Modified: `main.lua`
+- Modified: `Assets/game.lua`
+- Modified: `Plugins/soundPlayer.lua`
+- Modified: `Plugins/objectPool.lua`
+- Modified: `Assets/Entities/entity.lua`
+- Modified: `.luacheckrc`
+
+**Usage:**
+```lua
+-- Access debug settings
+if Config.Debug.MUTE_SOUND then
+  -- Handle muted sound
+end
+
+-- Access display settings
+display.setDefault("background", Config.Display.backgroundColor)
+
+-- Access game settings
+Game.play(Config.Game.defaultStory)
+
+-- Backward compatibility (still works)
+if _G.DEBUG.COMPOSER then
+  -- Old style still works
+end
+```
+
+**Benefits:**
+- ✅ Cleaner global namespace (organized into Config.* namespaces)
+- ✅ Better discoverability with IDE autocomplete
+- ✅ Type-safe access with LuaLS annotations
+- ✅ Single source of truth for all configuration
+- ✅ Easier to modify settings across codebase
+- ✅ Backward compatible with existing `_G.DEBUG` usage
+
+---
+
 ## Pending Improvements 📋
 
 ### 8. CI/CD Configuration (.github/workflows)
@@ -333,31 +393,6 @@ Add development mode hot-reloading for faster iteration:
 
 ---
 
-### 10. Constants/Config Centralization
-**Status:** Not Started
-**Priority:** Medium
-**Estimated Effort:** 2-3 hours
-
-**Description:**
-Refactor scattered configuration into centralized modules:
-- Consolidate `_G.DEBUG.*` settings
-- Create `Config.Game.*` for game settings
-- Create `Config.Display.*` for display settings
-- Reduce global namespace pollution
-
-**Planned Changes:**
-- Create `Libs/config.lua` module
-- Migrate settings from multiple locations
-- Update code to use new config structure
-- Add migration guide to README
-
-**Benefits:**
-- Cleaner global namespace
-- Easier configuration management
-- Better organization and discoverability
-- Type-safe config access
-
----
 
 ### 11. Docker/Container Development Environment
 **Status:** Not Started
@@ -440,9 +475,8 @@ Increase test coverage across the codebase:
 ### Priority Order for Remaining Work
 1. **Additional Unit Tests** (#12) - Ongoing improvement
 2. **CI/CD Configuration** (#8) - Important for team collaboration
-3. **Config Centralization** (#10) - Reduce tech debt
-4. **Hot Reload Support** (#9) - Nice-to-have for development
-5. **Docker Environment** (#11) - Optional, for larger teams
+3. **Hot Reload Support** (#9) - Nice-to-have for development
+4. **Docker Environment** (#11) - Optional, for larger teams
 
 ### Commands Reference
 ```bash
@@ -481,6 +515,14 @@ When adding new improvements:
 ---
 
 ## Change Log
+
+### 2025-12-28
+- Completed improvement #10: Constants/Config Centralization
+  - Created `Libs/config.lua` with organized namespaces
+  - Migrated scattered configuration to centralized module
+  - Maintained backward compatibility
+  - Updated all references throughout codebase
+- Updated priority recommendations
 
 ### 2025-12-22
 - Initial improvements tracking document created

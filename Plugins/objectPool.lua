@@ -40,7 +40,7 @@ local helperGroup     = display.newGroup()
 ---@type function|nil
 local addObjectInfo
 
-if _G.DEBUG.OBJECT_POOL_DATA then
+if Config.Debug.OBJECT_POOL_DATA then
   local showArea
   local objects = {}
   local textY   = 1
@@ -249,7 +249,7 @@ local function newItem(item, count, i)
   })
 end
 
-if _G.DEBUG.OBJECT_POOL then
+if Config.Debug.OBJECT_POOL then
   local prevTime = system.getTimer()
   local count = 0
 

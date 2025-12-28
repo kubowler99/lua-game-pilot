@@ -9,14 +9,14 @@ timer.performWithDelay(50, function()
   ------------------------------------------------------------------------------------------------------------------------
   -- PLUGINS --
   ------------------------------------------------------------------------------------------------------------------------
-  
+
   _G.savedData = require("Plugins.loadSave")
   _G.savedData.load()
-  
-  if _G.DEBUG.NUKE_ON_RESTART          then _G.savedData.nuke()
-  elseif _G.DEBUG.NUKE_FULL_ON_RESTART then _G.savedData.nukeFull()
+
+  if Config.Debug.NUKE_ON_RESTART          then _G.savedData.nuke()
+  elseif Config.Debug.NUKE_FULL_ON_RESTART then _G.savedData.nukeFull()
   end
-  
+
   ------------------------------------------------------------------------------------------------------------------------
   -- SYSTEM EVENTS --
   ------------------------------------------------------------------------------------------------------------------------

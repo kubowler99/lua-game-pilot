@@ -3,10 +3,8 @@ local composer = require("composer")
 local LoadingScreen = require("Plugins.loadingScreen")
 local State         = require("Libs.State.state")
 
----@type table<string, string>
-local stories = {
-  mainStory = "Assets.Story.mainStory",
-}
+-- Use centralized config for stories
+local stories = Config.Game.stories
 
 ---@alias Story chapterBasics
 
@@ -58,14 +56,14 @@ function Game.start()
 
   require("Plugins.soundPlayer").setState(Game.state)
 
-  display.setDefault("background", 0)
+  display.setDefault("background", Config.Display.backgroundColor)
 
   Game.layers = {}
   ObjectPool.load("basic")
-  if _G.DEBUG.MAIN_SCENE then
-    Game.play(_G.DEBUG.MAIN_SCENE)
+  if Config.Debug.MAIN_SCENE then
+    Game.play(Config.Debug.MAIN_SCENE)
   else
-    Game.play("mainStory")
+    Game.play(Config.Game.defaultStory)
   end
 end
 
@@ -82,7 +80,7 @@ end
 ---@param scene? string Scene name (without "Assets.Scenes." prefix). If nil, uses current scene
 ---@return table scene The Composer scene object
 function Game.getScene(scene)
-  return composer.getScene("Assets.Scenes."..(scene or Game._currentScene))
+  return composer.getScene(Config.Game.scenePrefix..(scene or Game._currentScene))
 end
 
 ---Shows loading screen and executes a loader function
@@ -108,8 +106,8 @@ function Game.goTo(scene, params)
     shortcuts[k] = nil
   end
   Game._currentScene = scene
-  composer.gotoScene("Assets.Scenes."..scene, {params = params})
-  Game.currentScene = composer.getScene("Assets.Scenes."..scene)
+  composer.gotoScene(Config.Game.scenePrefix..scene, {params = params})
+  Game.currentScene = composer.getScene(Config.Game.scenePrefix..scene)
 
   return shortcuts
 end
@@ -139,7 +137,7 @@ Runtime:addEventListener( "system", Game.onSystemEvent )
 ---Optionally pauses time system if pauseOnSuspend flag is set
 ---@return void
 function Game.suspend()
-  if Game.pauseOnSuspend then
+  if Config.Game.pauseOnSuspend then
     Game.time.pause()
   end
 end

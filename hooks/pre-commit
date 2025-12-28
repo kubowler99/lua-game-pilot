@@ -2,7 +2,7 @@
 # Pre-commit hook for lua-game-pilot
 # Runs code quality checks before allowing a commit
 
-set -e
+# Note: Not using 'set -e' to allow graceful handling of non-zero exit codes
 
 # Colors for output
 RED='\033[0;31m'
@@ -45,13 +45,25 @@ if [ "$SKIP_LINT" != "1" ]; then
   echo -e "${BLUE}[1/3] Running luacheck...${NC}"
 
   if command -v luacheck > /dev/null 2>&1; then
-    if echo "$STAGED_LUA_FILES" | xargs luacheck --no-color; then
-      echo -e "${GREEN}✓ Luacheck passed${NC}"
+    # Create a temp file to capture output
+    TEMP_OUTPUT=$(mktemp)
+
+    # Run luacheck and save to temp file
+    echo "$STAGED_LUA_FILES" | xargs luacheck --no-color > "$TEMP_OUTPUT" 2>&1
+
+    # Display the output
+    cat "$TEMP_OUTPUT"
+
+    # Check if there are any ERRORS (not just warnings)
+    if grep -q "0 errors" "$TEMP_OUTPUT"; then
+      echo -e "${GREEN}✓ Luacheck passed (no errors)${NC}"
+      rm -f "$TEMP_OUTPUT"
     else
-      echo -e "${RED}✗ Luacheck failed${NC}"
+      echo -e "${RED}✗ Luacheck failed with errors${NC}"
       echo ""
-      echo -e "${YELLOW}Fix the issues above or skip with:${NC}"
+      echo -e "${YELLOW}Fix the errors above or skip with:${NC}"
       echo -e "  ${BLUE}SKIP_LINT=1 git commit${NC}"
+      rm -f "$TEMP_OUTPUT"
       exit 1
     fi
   else

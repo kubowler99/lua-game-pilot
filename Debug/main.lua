@@ -1,37 +1,45 @@
-local settings = require("Debug.settings")
+-- Load centralized configuration
+local Config = require("Libs.config")
 
-_G.DEBUG = settings
+-- Load debug settings and merge into Config.Debug
+local settings = require("Debug.settings")
+for k, v in pairs(settings) do
+  Config.Debug[k] = v
+end
+
+-- Maintain backward compatibility with _G.DEBUG
+_G.DEBUG = Config.Debug
 
 local composer = require("composer")
-composer.isDebug = _G.DEBUG.COMPOSER
+composer.isDebug = Config.Debug.COMPOSER
 
-if settings.GAME_SCALE then
+if Config.Debug.GAME_SCALE and Config.Debug.GAME_SCALE ~= 1 then
   local view = display.getCurrentStage()
-  local s = settings.GAME_SCALE
+  local s = Config.Debug.GAME_SCALE
   view.xScale, view.yScale = s, s
   view.x, view.y = screen.width*(1-s)/2, screen.edgeY*(1-s)*.5
 end
 
 
-if _G.DEBUG.PLAY_IN_SLOWMO then
+if Config.Debug.PLAY_IN_SLOWMO then
   timer.performWithDelay(17000, function() _G.game.time.setTimeScale(0.1) end)
 end
 
 
-if _G.DEBUG.PROFILER then
+if Config.Debug.PROFILER then
   local profiler = require "Debug.profiler"
-  profiler.startProfiler(_G.DEBUG.PROFILER)
+  profiler.startProfiler(Config.Debug.PROFILER)
 end
 
 
-if _G.DEBUG.SHOW_PERFORMANCE then
+if Config.Debug.SHOW_PERFORMANCE then
   timer.performWithDelay(1000, function()
     require("Debug.debugInfo")
   end)
 end
 
 
-if _G.DEBUG.SKIP_ERRORS then 
+if Config.Debug.SKIP_ERRORS then
   local function myUnhandledErrorListener( event )
      local errorMessage = "ERROR:  " ..
          event.errorMessage .. "\n" ..
@@ -50,13 +58,13 @@ if _G.DEBUG.SKIP_ERRORS then
          end
        end
      end)
-  
+
      print("ERROR:  "..errorMessage)
-  
+
      if _G.game then _G.game.suspend() end
-  
+
      return true
    end
 
-  Runtime:addEventListener( "unhandledError", myUnhandledErrorListener ) 
+  Runtime:addEventListener( "unhandledError", myUnhandledErrorListener )
 end

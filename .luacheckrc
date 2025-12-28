@@ -64,6 +64,7 @@ globals = {
   "game",
   "savedData",
   "DEBUG",
+  "Config",
   "transition2",
   "ObjectPool",
 }
@@ -142,6 +143,13 @@ files["main.lua"] = {
 
 files["config.lua"] = {
   -- Config file is just a table return
+  ignore = {
+    "111",  -- Setting non-standard global variable
+  },
+}
+
+files["Libs/config.lua"] = {
+  -- Centralized config module sets globals
   ignore = {
     "111",  -- Setting non-standard global variable
   },
