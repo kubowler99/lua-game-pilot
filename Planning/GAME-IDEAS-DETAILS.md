@@ -38,7 +38,7 @@ Low Effort games are designed for rapid development and publication by a single 
 - Score tracking and basic leaderboard integration.
 
 **AI-Assisted Opportunities:**
-- Use AI code generators (e.g., Workik AI) for movement, collision, and UI scripts.
+- Use AI code generators for movement, collision, and UI scripts.
 - Generate simple sprite sheets and backgrounds with AI art tools (e.g., Ludo.ai Sprite Generator).
 - Automated playtesting for collision edge cases and difficulty balancing.
 
