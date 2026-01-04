@@ -78,15 +78,29 @@ function Chapter:fadeOutIn(params)
 end
 
 
-function Chapter:setGUIClass(gui)
+function Chapter:setGUIClass(gui, parent)
   if self.gui then
     self.gui:clear()
   end
 
   self.gui = nil
   if gui then
-    self.gui = require("Assets.Entities.GUI."..gui):new(game.currentScene.view, shortcuts.environment)
+    self.gui = require("Assets.Entities.GUI."..gui):new(parent or game.currentScene.view, shortcuts.environment)
     shortcuts.gui = self.gui
+  end
+end
+
+
+function Chapter:showUp(panels, effect)
+  if self.gui then
+    self.gui:showUp(panels, effect)
+  end
+end
+
+
+function Chapter:hide(panels, effect)
+  if self.gui then
+    self.gui:hide(panels, effect)
   end
 end
 

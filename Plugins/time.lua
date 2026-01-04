@@ -274,6 +274,7 @@ function Time.resume(avoidPause)
   end
   Time.isPaused = false
 
+  require("physics").start()
   SoundPlayer.resume()
 
   for _,o in pairs(_pausableObjects) do
@@ -291,6 +292,7 @@ function Time.pause()
   Time.isPaused = true
   _startPauseTime = getTimer()
 
+  require("physics").pause()
   SoundPlayer.pause()
 
   for _,o in pairs(_pausableObjects) do

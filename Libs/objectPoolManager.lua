@@ -22,10 +22,7 @@ local ObjectPool = require("Plugins.objectPool")
 ---  myOtherObject = function() return display.newImageRect("path.png", 3, 3) end (function factory)
 ---@type table<string, string|function>
 local factory = {
-
-  -- myObject      = "Assets.Entities.Animated.myObject",
-  -- myOtherObject = function() return display.newImageRect("Assets/Entities/Effects/Particles/small_chunk.png", 3, 3) end,
-
+  obstacle = "Assets.Entities.obstacle",
 }
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -91,6 +88,22 @@ function ObjectPoolManager.getObject(object)
     registeredObjects[object] = true
   end
   return ObjectPool.getObject(object)
+end
+
+---Alias for getObject
+---@param object string Object name
+---@return table instance The pooled object instance
+function ObjectPoolManager.get(object)
+  return ObjectPoolManager.getObject(object)
+end
+
+---Recycles an object back to the pool
+---@param object table The pooled object instance
+---@return void
+function ObjectPoolManager.recycle(object)
+  if object.dispose then
+    object:dispose()
+  end
 end
 
 

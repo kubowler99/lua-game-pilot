@@ -205,76 +205,52 @@
 ### 4.1 File structure
 
 ```text
-/src
-  main.lua
-  config.lua
-  build.settings
-  /scenes
-    menu.lua
-    game.lua
-  /systems
-    player.lua
-    obstacles.lua
-    background.lua
-    score.lua
-    audioManager.lua
-    storage.lua
-  /ui
-    hud.lua
-    buttons.lua
-/assets
-  /images
-  /audio
-  /fonts
-/data
-  patterns.json
-  difficulty.json
+/
+├── main.lua              -- Entry point, bootstrap sequence
+├── config.lua            -- App configuration (resolution, FPS)
+├── build.settings        -- Platform-specific settings (orientation, plugins)
+├── Assets/
+│   ├── game.lua          -- Central game controller (lifecycle, scene management)
+│   ├── Entities/         -- Base entity class and game objects
+│   ├── Scenes/           -- Composer scene implementations
+│   ├── Story/            -- Game flow, chapters, and object pool definitions
+│   ├── Audio/            -- Audio loaders and assets
+│   └── Environments/     -- Game world/background implementations
+├── Libs/                 -- Core utility libraries (MiddleClass, Utils, State, etc.)
+├── Plugins/              -- Reusable system plugins (loadSave, time, soundPlayer)
+├── Debug/                -- Debug configurations and runtime features
+└── data/                 -- (Optional) JSON definitions for patterns/difficulty
 ```
 
 ### 4.2 Module responsibilities
 
 **`main.lua`**
-- Initialize composer.
-- Go to `menuScene`.
+- Initialize bootstrap sequence.
+- Initialize save/load system.
+- Start game via `_G.game.start()`.
 
-**`config.lua`**
-- Content scaling, resolution, FPS.
+**`Assets/game.lua`**
+- Centralized game controller.
+- Manage lifecycle (start, save, suspend, resume).
+- Handle scene transitions and loading screens.
 
-**`scenes/menu.lua`**
-- Show title, play button, settings button.
-- Display high score.
+**`Assets/Entities/entity.lua`**
+- Base class for all game objects.
+- Manage positioning, transforms, visuals, and lifecycle (create/update/remove).
 
-**`scenes/game.lua`**
-- Create player, background, obstacle system, HUD.
-- Handle game loop and state transitions.
+**`Assets/Scenes/mainGame.lua`**
+- Primary game scene using Composer.
+- Standard lifecycle (create/show/hide/destroy).
 
-**`systems/player.lua`**
-- Create player display object and physics body.
-- Expose `jump()`, `update()`, `die()`.
+**`Libs/`**
+- **`utils.lua`**: Math and string extensions.
+- **`screen.lua`**: Screen dimension and layout management.
+- **`objectPoolManager.lua`**: Performance optimization via object reuse.
 
-**`systems/obstacles.lua`**
-- Manage obstacle pool.
-- Expose `init()`, `spawnPattern()`, `update()`, `reset()`.
-
-**`systems/background.lua`**
-- Create parallax layers.
-- Expose `update()`.
-
-**`systems/score.lua`**
-- Track score and difficulty.
-- Expose `update(deltaTime)`, `reset()`, `getScore()`.
-
-**`systems/audioManager.lua`**
-- Load and play SFX/BGM.
-- Expose `playSFX(name)`, `playMusic(name)`, `stopMusic()`.
-
-**`systems/storage.lua`**
-- Save/load JSON data.
-- Expose `loadData()`, `saveData()`.
-
-**`ui/hud.lua`**
-- Display score, pause button.
-- Expose `setScore(value)`, `showGameOver()`.
+**`Plugins/`**
+- **`loadSave.lua`**: Persistent data management (JSON-based).
+- **`time.lua`**: Frame-independent timing and time scaling (slow-mo).
+- **`soundPlayer.lua`**: Audio playback management.
 
 ---
 
@@ -325,9 +301,10 @@
 ### 6.1 Physics
 
 - Use **Box2D** via Solar2D physics.
-- Gravity set globally in `gameScene`.
-- Player: dynamic body, fixed rotation.
-- Obstacles: static or kinematic bodies.
+- Gravity set globally in `gameScene` to `(0, 200)` for a snappy, high-speed feel.
+- Player: dynamic body, fixed rotation, jump impulse `-2.0`.
+- Obstacles: kinematic bodies, `isSensor = true`.
+- Ground: static body.
 
 ### 6.2 Performance considerations
 

@@ -1,0 +1,36 @@
+{
+  "patterns": [
+    {
+      "id": "single_low",
+      "difficulty": 1,
+      "sequence": [
+        { "type": "low", "offset": 0 }
+      ]
+    },
+    {
+      "id": "double_low",
+      "difficulty": 2,
+      "sequence": [
+        { "type": "low", "offset": 0 },
+        { "type": "low", "offset": 300 }
+      ]
+    },
+    {
+      "id": "triple_low",
+      "difficulty": 3,
+      "sequence": [
+        { "type": "low", "offset": 0 },
+        { "type": "low", "offset": 250 },
+        { "type": "low", "offset": 500 }
+      ]
+    },
+    {
+      "id": "high_low_mix",
+      "difficulty": 4,
+      "sequence": [
+        { "type": "low", "offset": 0 },
+        { "type": "high", "offset": 400 }
+      ]
+    }
+  ]
+}

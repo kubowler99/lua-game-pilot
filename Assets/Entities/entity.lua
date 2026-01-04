@@ -542,6 +542,7 @@ end
 ---@return void
 function Entity:stop()
   self:interrupt()
+  _G.game.time.unsubscribe(self)
 end
 
 ---Brings entity back to base state

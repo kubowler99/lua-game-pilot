@@ -13,6 +13,12 @@ function scene:create( event, params )
   self.environment = Environment:new(self.view)
 
   gameShortcuts.environment = self.environment
+
+  -- Initialize GUI
+  if _G.game.story and _G.game.story.setGUIClass then
+    _G.game.story:setGUIClass("MainGame", self.view)
+    _G.game.story:showUp({"btnPlayPause", "score"}, "displacement")
+  end
 end
 
 

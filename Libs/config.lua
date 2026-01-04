@@ -113,12 +113,13 @@ Config.Game = {
   --- Available story modules
   --- @type table<string, string>
   stories = {
-    mainStory = "Assets.Story.mainStory",
+    mainMenu  = "Assets.Story.mainStory",
+    mainGame  = "Assets.Story.mainStory",
   },
 
   --- Default story to start
   --- @type string
-  defaultStory = "mainStory",
+  defaultStory = "mainMenu",
 
   --- Scene path prefix
   --- @type string

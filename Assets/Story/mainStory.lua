@@ -9,7 +9,7 @@ local Chapter = Class("mainStory", ChapterBasics)
 function Chapter:initialize()
   game.load(function()
     ObjectPool.load("basic")
-    self.scene = game.goTo("mainGame")
+    self.scene = game.goTo("menu")
   end)
 end
 

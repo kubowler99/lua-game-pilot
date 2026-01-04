@@ -1,13 +1,8 @@
 local SoundPlayer = require("Plugins.soundPlayer")
 
 -- Music ---
-
--- SoundPlayer.loadSound("my music", true, nil, true)
-
--- Long sfx ---
-
--- SoundPlayer.loadSound("my long sfx", true, nil, true)
+SoundPlayer.loadSound("bgm", true, nil, true)
 
 -- Sfx ---
-
--- SoundPlayer.loadSound("my sfx", true)
+SoundPlayer.loadSound("jump", false)
+SoundPlayer.loadSound("death", false)

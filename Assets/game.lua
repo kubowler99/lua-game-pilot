@@ -50,13 +50,27 @@ _G.ObjectPool     = require("Libs.objectPoolManager")
 ---6. Starts main story or debug scene
 ---@return void
 function Game.start()
+  local physics = require("physics")
+  physics.start()
+  physics.setGravity(0, 200) -- Significantly increased gravity to keep jump height low
   Game.time.start()
 
-  Game.state = State:new(_G.savedData.getValue("state"), Game)
+  Game.state = State:new(_G.savedData.getValue("state") or {}, Game)
+
+  -- Initialize game-specific state if not present
+  if not Game.state:getValue("score") then Game.state:setValue("score", 0) end
+  if not Game.state:getValue("runSpeed") then Game.state:setValue("runSpeed", 300) end
+  if not Game.state:getValue("highScore") then
+    local savedHighScore = _G.savedData.getValue("highScore") or 0
+    Game.state:setValue("highScore", savedHighScore)
+  end
 
   require("Plugins.soundPlayer").setState(Game.state)
 
   display.setDefault("background", Config.Display.backgroundColor)
+
+  -- Start background music
+  Game.music.play("bgm")
 
   Game.layers = {}
   ObjectPool.load("basic")

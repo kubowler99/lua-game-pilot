@@ -62,7 +62,7 @@ function SoundPlayer.loadSound(sound, long, ext, music)
       if not eventSoundTable[sound] then
         eventSoundTable[sound] = media.newEventSound("Assets/Audio/Sfx/"..sound..ext)
         if not eventSoundTable[sound] then
-          error( "not sound", sound )
+          print( "Warning: not sound", sound )
         end
       end
     elseif not soundTable[sound] then
@@ -70,7 +70,7 @@ function SoundPlayer.loadSound(sound, long, ext, music)
       if music or not soundTable[sound] then soundTable[sound] = audio.loadSound("Assets/Audio/Musics/"..sound..ext) end
 
       if not soundTable[sound] then
-        error( "Can't load sound: \""..sound..ext.."\"" )
+        print( "Warning: Can't load sound: \""..sound..ext.."\"" )
       end
     end
 end
@@ -100,12 +100,16 @@ function SoundPlayer.playSound(sound, params)
     if not eventSoundTable[sound] then
       eventSoundTable[sound] = media.newEventSound("Assets/Audio/Sfx/"..sound..".mp3")
     end
-    media.playEventSound(eventSoundTable[sound])
+    if eventSoundTable[sound] then
+      media.playEventSound(eventSoundTable[sound])
+    end
   else
     if not soundTable[sound] then
       soundTable[sound] = audio.loadSound("Assets/Audio/Sfx/"..sound..".mp3")
     end
-    return audio.play(soundTable[sound], params)
+    if soundTable[sound] then
+      return audio.play(soundTable[sound], params)
+    end
   end
 end
 
@@ -136,7 +140,9 @@ function SoundPlayer.longSound(sound)
 	if not soundTable[sound] then
 		SoundPlayer.loadSound(sound,true)
 	end
-	return audio.play(soundTable[sound])
+  if soundTable[sound] then
+	  return audio.play(soundTable[sound])
+  end
 end
 
 
@@ -154,18 +160,22 @@ function SoundPlayer.playMusic(sound, stinger, once, onComplete, channel)
 
   if sound ~= nil then
     if not soundTable[sound] then
-       SoundPlayer.loadSound(sound, true)
+       SoundPlayer.loadSound(sound, true, nil, true)
     end
   end
   if stinger then
-    if Config.Debug.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted then
-      audio.play(soundTable[stinger])
+    if soundTable[stinger] then
+      if Config.Debug.MUTE_SOUND or SoundPlayer.muted or SoundPlayer.sfxMuted then
+        -- Muted check seems weird here but following existing pattern
+      else
+        audio.play(soundTable[stinger])
+      end
     end
 
     timer.performWithDelay(fadeOutDelay,function()
       audio.fade{channel=channel, time=fadeOutTime, volume=0}
     end)
-    if sound ~= nil then
+    if sound ~= nil and soundTable[sound] then
       timer.performWithDelay(fadeInDelay,function()
         audio.stop(channel)
         audio.play(soundTable[sound],{channel = channel, loops = once and 1 or -1, onComplete = onComplete })
@@ -174,11 +184,13 @@ function SoundPlayer.playMusic(sound, stinger, once, onComplete, channel)
     end
   else
     audio.stop(1)
-  	return audio.play(soundTable[sound],{
-      channel    = channel,
-      loops      = once and 0 or -1,
-      onComplete = onComplete
-    })
+    if sound ~= nil and soundTable[sound] then
+  	  return audio.play(soundTable[sound],{
+        channel    = channel,
+        loops      = once and 0 or -1,
+        onComplete = onComplete
+      })
+    end
   end
 
   return 1
@@ -302,15 +314,16 @@ end
 ---Internal callback for music config state changes
 ---@param e table Event with e.value boolean (true = music should be muted)
 ---@return void
-function SoundPlayer._musicConfigsUpdated(e)
-  SoundPlayer.muteMusic(e.value)
+function SoundPlayer._musicConfigsUpdated(_, e)
+  SoundPlayer.muteMusic(not e.value)
 end
 
 ---Internal callback for SFX config state changes
----@param e table Event with e.value boolean (true = sfx should be muted)
+---@param _ any Key (unused)
+---@param e table Event with e.value boolean (true = sfx should be enabled)
 ---@return void
-function SoundPlayer._sfxConfigsUpdated(e)
-  SoundPlayer.muteSfx(e.value)
+function SoundPlayer._sfxConfigsUpdated(_, e)
+  SoundPlayer.muteSfx(not e.value)
 end
 
 
