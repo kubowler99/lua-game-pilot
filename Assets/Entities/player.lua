@@ -6,31 +6,76 @@ local SpriteSheetAnimation = require("Assets.Entities.Animated.spriteSheetAnimat
 local Player = Class("player", Entity)
 
 function Player:create(parent, x, y)
-  self.width = 40
-  self.height = 60
+  self.width = 160  -- Quadrupled from original 40
+  self.height = 240 -- Quadrupled from original 60
 
   Entity.create(self, parent, x, y)
 
   -- Animation Configuration
-  -- Note: These are placeholders. Real spritesheets would be loaded here.
   local sequenceData = {
-    { name = "run", start = 1, count = 1, time = 400, loopCount = 0 },
-    { name = "jump", start = 1, count = 1, time = 400, loopCount = 1 },
-    { name = "fall", start = 1, count = 1, time = 400, loopCount = 1 },
-    { name = "dead", start = 1, count = 1, time = 400, loopCount = 1 }
+    { name = "death", start = 1, count = 8, time = 600, loopCount = 1 },
+    { name = "jump", start = 9, count = 8, time = 400, loopCount = 1 },
+    { name = "run", start = 17, count = 6, time = 400, loopCount = 0 },
+    { name = "fall", start = 12, count = 1, time = 400, loopCount = 1 }, -- Using frame 12 from jump as fall
+    { name = "dead", start = 8, count = 1, time = 400, loopCount = 1 }   -- Final frame of death
   }
 
-  -- If we had a real image sheet, we'd use graphics.newImageSheet
-  -- For now, we'll keep the placeholder body but prepare the animation class
-  self._body = display.newRect(self.group, 0, 0, self.width, self.height)
-  self._body:setFillColor(0, 0, 1) -- Blue player
+  -- Visual Representation
+  local sheetPath = "Assets/Textures/player.lua"
+  local imagePath = "Assets/Textures/player.png"
 
-  -- Initialize Animation
-  -- self._animation = SpriteSheetAnimation:new(self.group)
-  -- self._animation:playAnimation("run")
+  local sheetDataPath = system.pathForFile(sheetPath, system.ResourceDirectory)
+  local imageFilePath = system.pathForFile(imagePath, system.ResourceDirectory)
+
+  if sheetDataPath and imageFilePath then
+    -- Load Sprite Sheet
+    local sheetInfo = require("Assets.Textures.player")
+    local imageSheet = graphics.newImageSheet(imagePath, sheetInfo:getSheet())
+
+    self._animation = SpriteSheetAnimation:new(self.group, imageSheet, sequenceData)
+    self._animation.group.xScale, self._animation.group.yScale = 4, 4 -- Quadruple animation size
+    -- Shifting the sprite down to align feet with the bottom of the physics box
+    self._animation.group.y = 56
+    self._animation:playAnimation("run")
+    self._body = self._animation.group
+  elseif imageFilePath then
+    -- Single Image
+    self._body = display.newImageRect(self.group, imagePath, self.width, self.height)
+  else
+    -- Fallback to placeholder rectangle
+    self._body = display.newRect(self.group, 0, 0, self.width, self.height)
+    self._body:setFillColor(0, 0, 1) -- Blue player
+  end
+
 
   -- Physics Integration
-  physics.addBody(self.group, "dynamic", { bounce = 0, friction = 0.5 })
+  -- Check for PhysicsEditor data
+  local physicsDataPath = "Assets/Textures/dudeMonsterRun.lua"
+  local physicsFile = system.pathForFile(physicsDataPath, system.ResourceDirectory)
+
+  if physicsFile then
+    local physicsData = require("Assets.Textures.dudeMonsterRun")
+    -- Handle different PhysicsEditor export formats
+    local fixtureData
+    if type(physicsData) == "table" then
+      if physicsData.get then
+        fixtureData = physicsData:get("Dude_Monster_Run_6-0")
+      else
+        fixtureData = physicsData["Dude_Monster_Run_6-0"]
+      end
+    end
+
+    if fixtureData then
+      physics.addBody(self.group, "dynamic", fixtureData)
+    else
+      print("[DEBUG_LOG] Warning: Could not find fixture 'Dude_Monster_Run_6-0' in dudeMonsterRun.lua")
+      physics.addBody(self.group, "dynamic", { bounce = 0, friction = 0.5, box = { halfWidth = 80, halfHeight = 120 } })
+    end
+  else
+    -- Fallback to explicit box to match visual size (160x240)
+    physics.addBody(self.group, "dynamic", { bounce = 0, friction = 0.5, box = { halfWidth = 80, halfHeight = 120 } })
+  end
+
   self.group.isFixedRotation = true
   self.group.type = "player"
 
@@ -66,7 +111,9 @@ function Player:enterFrame(dt)
     local vx, vy = self.group:getLinearVelocity()
     if not _G.game.state:getValue("player.isGrounded") then
       if vy > 0 then
-        -- self._animation:playAnimation("fall")
+        if self._animation then
+          self._animation:playAnimation("fall")
+        end
       end
     end
   end
@@ -84,11 +131,13 @@ function Player:tap()
     local vx, vy = self.group:getLinearVelocity()
     self.group:setLinearVelocity(vx, 0)
 
-    -- Significantly reduced impulse to match very high gravity and keep jump height low.
-    self.group:applyLinearImpulse(0, -2.0, self.group.x, self.group.y)
+    -- Increased impulse to -25.0 to help clear obstacles after size adjustments
+    self.group:applyLinearImpulse(0, -25.0, self.group.x, self.group.y)
 
     self:playSound("jump")
-    -- self._animation:playAnimation("jump")
+    if self._animation then
+      self._animation:playAnimation("jump")
+    end
 
     _G.game.state:setValue("player.isGrounded", false)
     _G.game.state:add("player.jumpCount", 1)
@@ -99,14 +148,14 @@ function Player:spawnDust()
   if _G.game.state:getValue("player.isDead") then return end
   if not _G.game.state:getValue("player.isGrounded") then return end
 
-  local dust = display.newCircle(self.group, -10, self.height * 0.5 - 5, math.random(2, 4))
+  local dust = display.newCircle(self.group, -40, self.height * 0.5 - 20, math.random(8, 16))
   dust:setFillColor(0.8, 0.8, 0.8, 0.5)
   dust:toBack()
 
   transition.to(dust, {
     time = 500,
-    x = dust.x - math.random(20, 40),
-    y = dust.y - math.random(5, 10),
+    x = dust.x - math.random(80, 160),
+    y = dust.y - math.random(20, 40),
     alpha = 0,
     xScale = 0.1,
     yScale = 0.1,
@@ -125,13 +174,6 @@ function Player:onLocalCollision(event)
         print("[DEBUG_LOG] Player hit an obstacle! Game Over.")
 
         self:playSound("death")
-        -- self._animation:playAnimation("dead")
-
-        -- Trigger death sequence: pause physics and time
-        _G.game.time.pause()
-        -- Change color to indicate death
-        self._body:setFillColor(1, 0, 0, 0.5)
-
         -- Handle High Score
         local currentScore = _G.game.state:getValue("score")
         local highScore = _G.game.state:getValue("highScore")
@@ -142,11 +184,24 @@ function Player:onLocalCollision(event)
           print("[DEBUG_LOG] New High Score: " .. math.floor(currentScore))
         end
 
-        -- Show Game Over UI
-        if _G.game.shortcuts.environment then
-          if _G.game.shortcuts.environment.spawnerTimer then
-            timer.cancel(_G.game.shortcuts.environment.spawnerTimer)
-          end
+        if _G.game.shortcuts.environment and _G.game.shortcuts.environment.spawnerTimer then
+          timer.cancel(_G.game.shortcuts.environment.spawnerTimer)
+        end
+
+        -- Trigger death sequence: pause physics but keep time running briefly for animation
+        require("physics").pause()
+
+        if self._animation then
+          self._animation:playAnimation("death", {
+            onComplete = function()
+              _G.game.time.pause()
+              if _G.game.shortcuts.environment.showGameOver then
+                _G.game.shortcuts.environment:showGameOver()
+              end
+            end
+          })
+        else
+          _G.game.time.pause()
           if _G.game.shortcuts.environment.showGameOver then
             _G.game.shortcuts.environment:showGameOver()
           end
@@ -155,9 +210,12 @@ function Player:onLocalCollision(event)
     elseif other.type == "ground" then
       _G.game.state:setValue("player.isGrounded", true)
       _G.game.state:setValue("player.jumpCount", 0)
-      -- if not _G.game.state:getValue("player.isDead") then
-      --   self._animation:playAnimation("run")
-      -- end
+      print("[DEBUG_LOG] Player landed on the ground.")
+      if not _G.game.state:getValue("player.isDead") then
+        if self._animation then
+          self._animation:playAnimation("run")
+        end
+      end
     end
   end
 end

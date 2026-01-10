@@ -7,11 +7,17 @@ local AnimationBase = require("Assets.Entities.Animated.animation")
 local SpriteSheetAnimation = Class("spriteSheetAnimation", AnimationBase)
 SpriteSheetAnimation._inGameElement = true
 
-function SpriteSheetAnimation:create(parent)
+function SpriteSheetAnimation:create(parent, imageSheet, sequenceData)
   AnimationBase.create(self, parent)
+  self.__imageSheet = imageSheet or self.__imageSheet
+  self.__sequenceData = sequenceData or self.__sequenceData
+
+  assert(self.__imageSheet, "ImageSheet is required for SpriteSheetAnimation")
+  assert(self.__sequenceData, "SequenceData is required for SpriteSheetAnimation")
+
   self._spriteSheet = display.newSprite(self.group, self.__imageSheet, self.__sequenceData)
   self._spriteSheet:addEventListener("sprite", self)
-  self._spriteSheet.anchorX, self._spriteSheet.anchorY = self.__anchorX or .5, self.__anchorY or 1
+  self._spriteSheet.anchorX, self._spriteSheet.anchorY = self.__anchorX or .5, self.__anchorY or .5 -- Centered anchor
 
   self.__busyTable = {}
   for _,data in pairs(self.__sequenceData) do

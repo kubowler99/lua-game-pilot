@@ -24,7 +24,8 @@ function Environment:create(parent)
   self.ground.type = "ground"
 
   -- Add player
-  self.player = Player:new(self.group, screen.originX + 100, screen.edgeY - 150)
+  -- Drop player from a higher point to ensure collision triggers
+  self.player = Player:new(self.group, screen.originX + 100, screen.edgeY - 300)
   _G.game.shortcuts.player = self.player
 
   -- Tap to jump
@@ -112,9 +113,9 @@ function Environment:spawnObstacle()
     obs.group.x = screen.edgeX + 50 + (item.offset or 0)
 
     if item.type == "high" then
-      obs.group.y = screen.edgeY - 150 -- Floating obstacle
+      obs.group.y = screen.edgeY - 200 -- Floating obstacle
     else
-      obs.group.y = screen.edgeY - 60 -- Ground obstacle
+      obs.group.y = screen.edgeY - 80 -- Grounded obstacle (Bottom 40px aligned with ground top at edgeY-40)
     end
   end
 end
