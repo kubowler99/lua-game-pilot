@@ -75,11 +75,11 @@ Config.Debug = {
 Config.Display = {
   --- Content width in pixels
   --- @type number
-  width = 640,
+  width = 1920,
 
   --- Content height in pixels
   --- @type number
-  height = 1136,
+  height = 1080,
 
   --- Scaling mode: "letterbox", "zoomEven", "adaptive", etc.
   --- @type string
@@ -114,11 +114,12 @@ Config.Game = {
   --- @type table<string, string>
   stories = {
     mainStory = "Assets.Story.mainStory",
+    boxedStory = "Assets.Story.boxedStory",
   },
 
   --- Default story to start
   --- @type string
-  defaultStory = "mainStory",
+  defaultStory = "boxedStory",
 
   --- Scene path prefix
   --- @type string

@@ -14,6 +14,11 @@ local function playSequence(sequence)
 end
 
 
+function Music.playSFX(sfx, params)
+  return SoundPlayer.playSound(sfx, params)
+end
+
+
 function Music.play(music, onComplete)
   SoundPlayer.playMusic(music, nil, nil, onComplete, nil)
 end

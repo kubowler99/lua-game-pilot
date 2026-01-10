@@ -24,6 +24,7 @@ local stories = Config.Game.stories
 ---@field _currentScene string Internal tracker for current scene name
 local Game = {}
 _G.game = Game
+_G.Game = Game
 
 ---Quick reference shortcuts to scene objects
 ---@type table<string, any>

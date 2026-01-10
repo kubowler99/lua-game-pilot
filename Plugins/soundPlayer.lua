@@ -103,7 +103,12 @@ function SoundPlayer.playSound(sound, params)
     media.playEventSound(eventSoundTable[sound])
   else
     if not soundTable[sound] then
-      soundTable[sound] = audio.loadSound("Assets/Audio/Sfx/"..sound..".mp3")
+      local path = "Assets/Audio/Sfx/"..sound..".mp3"
+      if not system.pathForFile(path, system.ResourceDirectory) then
+        print("[WARNING] Sound file not found: " .. path)
+        return
+      end
+      soundTable[sound] = audio.loadSound(path)
     end
     return audio.play(soundTable[sound], params)
   end

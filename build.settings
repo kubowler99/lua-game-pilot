@@ -1,7 +1,20 @@
 settings = {
   orientation = {
-    default   = "portrait",
-    supported = { "portrait", "portraitUpsideDown" }
+    default   = "landscapeRight",
+    supported = { "landscapeRight", "landscapeLeft" }
+  },
+
+  window = {
+    defaultMode = "normal",
+    defaultViewWidth = 1920,
+    defaultViewHeight = 1080,
+    resizable = true,
+    minViewWidth = 960,
+    minViewHeight = 540,
+    enableMaximizeButton = true,
+    titleText = {
+      default = "Boxed",
+    },
   },
 
   iphone = {
